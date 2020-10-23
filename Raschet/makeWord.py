@@ -224,6 +224,7 @@ def makeWord_obnar(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum
 def makeWord_elvn(data_in:CalcClass.data_in, data_out:CalcClass_datadata_out, docum=None):
 
     doc = docx.Document(docum)
+    # добавить полусферическое
     doc.add_heading(f'Расчет на прочность эллептического днища {data_in.name}, нагруженного внутренним избыточным давлением').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('Исходные данные').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
@@ -276,6 +277,11 @@ def makeWord_elvn(data_in:CalcClass.data_in, data_out:CalcClass_datadata_out, do
     table.cell(8, 1).paragraphs[0].add_run('c_2').font.math = True
     #table.cell(8, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     table.cell(8, 2).text =f'{data_in.c_minus}'
+    table.add_row()
+    table.cell(9, 0).text = 'Технологическая прибавка, мм'
+    table.cell(9, 1).paragraphs[0].add_run('c_3').font.math = True
+    #table.cell(9, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    table.cell(9, 2).text =f'{data_in.c_3}'
     doc.add_paragraph('')
     doc.add_paragraph('Результаты расчета').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('')
@@ -286,10 +292,11 @@ def makeWord_elvn(data_in:CalcClass.data_in, data_out:CalcClass_datadata_out, do
     p.add_run(' - расчетная толщина стенки обечайки')
     doc.add_paragraph().add_run('s_1p=(p∙R)/(2∙[σ]∙φ-0.5∙p)').font.math = True
     doc.add_paragraph('где R - радиус кривизны в вершине днища')
+    # добавить расчет R для разных ситуаций
     doc.add_paragraph('R=D={data_in.dia} мм - для эллиптичекских днищ с H=0.25D')
     doc.add_paragraph('c - сумма прибавок к расчетной толщине')
-    doc.add_paragraph().add_run('c=c_1+c_2').font.math = True
-    doc.add_paragraph().add_run(f'c={data_in.c_kor}+{data_in.c_minus}={data_out.c:.2f} мм').font.math = True
+    doc.add_paragraph().add_run('c=c_1+c_2+c_3').font.math = True
+    doc.add_paragraph().add_run(f'c={data_in.c_kor}+{data_in.c_minus}+{data_in.c3}={data_out.c:.2f} мм').font.math = True
     doc.add_paragraph().add_run(f's_p=({data_in.press}∙{data_out.R})/(2∙{data_in.sigma_d}∙{data_in.fi}-0.5{data_in.press})={data_out.s_calcr:.2f} мм').font.math = True
     doc.add_paragraph().add_run(f's={data_out.s_calcr:.2f}+{data_out.c:.2f}={data_out.s_calc:.2f} мм').font.math = True
     if data_in.s_prin > data_out.s_calc:
@@ -297,8 +304,8 @@ def makeWord_elvn(data_in:CalcClass.data_in, data_out:CalcClass_datadata_out, do
     else:
         doc.add_paragraph().add_run(f'Принятая толщина s={data_in.s_prin} мм').font.color.rgb = docx.shared.RGBColor(255,0,0)
     doc.add_paragraph('Допускаемое внутреннее избыточное давление вычисляют по формуле:')
-    doc.add_paragraph().add_run('[p]=(2∙[σ]∙φ_p∙(s-c))/(D+s-c)').font.math = True
-    doc.add_paragraph().add_run(f'[p]=(2∙{data_in.sigma_d}∙{data_in.fi}∙({data_in.s_prin}-{data_out.c:.2f}))/({data_in.dia}+{data_in.s_prin}-{data_out.c:.2f})={data_out.press_d:.2f} МПа').font.math = True
+    doc.add_paragraph().add_run('[p]=(2∙[σ]∙φ∙(s_1-c))/(R+0.5∙(s-c))').font.math = True
+    doc.add_paragraph().add_run(f'[p]=(2∙{data_in.sigma_d}∙{data_in.fi}∙({data_in.s_prin}-{data_out.c:.2f}))/({data_out.R}+0.5∙({data_in.s_prin}-{data_out.c:.2f}))={data_out.press_d:.2f} МПа').font.math = True
     doc.add_paragraph().add_run('[p]≥p').font.math = True
     doc.add_paragraph().add_run(f'{data_out.press_d:.2f}≥{data_in.press}').font.math = True
     if data_out.press_d > data_in.press:
@@ -306,11 +313,13 @@ def makeWord_elvn(data_in:CalcClass.data_in, data_out:CalcClass_datadata_out, do
     else:
         doc.add_paragraph().add_run('Условие прочности не выполняется').font.color.rgb = docx.shared.RGBColor(255,0,0)
     p = doc.add_paragraph('Границы применения формул ')
-    if data_in.dia >= 200:
-        p.add_run('при D ≥ 200 мм')
-        doc.add_paragraph().add_run('(s-c)/(D)≤0.1').font.math = True
-        doc.add_paragraph().add_run(f'({data_in.s_prin}-{data_out.c:.2f})/({data_in.dia})={(data_in.s_prin-data_out.c)/data_in.dia:.3f}≤0.1').font.math = True
-    else:
+    # эллептические днища
+    if data_in.met == 'elvn':
+        doc.add_paragraph().add_run('0.002≤(s_1-c)/(D)≤0.1').font.math = True
+        doc.add_paragraph().add_run(f'0.002≤({data_in.s_prin}-{data_out.c:.2f})/({data_in.dia})={(data_in.s_prin-data_out.c)/data_in.dia:.3f}≤0.1').font.math = True
+        doc.add_paragraph().add_run('0.2≤H/D≤0.5').font.math = True
+        doc.add_paragraph().add_run(f'0.2≤{data_in.elH}/{data_in.dia}<0.5}={data_in.elH/data_in.dia:.3f}<0.5').font.math = True
+    elif data_in.met == 'torvn' or data_in.met == 'tornar':
         p.add_run('при D < 200 мм')
         doc.add_paragraph().add_run('(s-c)/(D)≤0.3').font.math = True
         doc.add_paragraph().add_run(f'({data_in.s_prin}-{data_out.c:.2f})/({data_in.dia})={(data_in.s_prin-data_out.c)/data_in.dia:.2f}≤0.3').font.math = True
