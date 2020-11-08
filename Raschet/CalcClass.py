@@ -21,6 +21,7 @@ class data_in(object):
     ny = float(2.4)
     met = str()
     elH = int()
+    elh1 = int()
 
 class data_out(object):
     s_calcr = float()
@@ -127,7 +128,6 @@ class CalcClass(object):
 
 
     def calc_ob(self, data_in:data_in): #sigma_d, press, dia, c_kor, c_minus, fi, s_prin=0.0, dav='vn', l=0, E=0):
-        import math
         """ 
         in data_in(name, steel, press, temp, sigma_d, 
             dia, c_kor, c_minus, fi, s_prin,
@@ -135,6 +135,9 @@ class CalcClass(object):
             l=0 ,l3_1=0, l3_2=0 E=0)
           out data_out [0] - s_calcr [1] - s_calc [2] - s_prin [3] - press_d [4] - c
         """
+        
+        import math
+        
         do_out = data_out()
         if data_in.dav == 'vn':
             do_out.s_calcr = data_in.press * data_in.dia / ((2 * data_in.sigma_d * data_in.fi) - data_in.press)
@@ -181,7 +184,6 @@ class CalcClass(object):
 
 
     def calc_el(self, data_in:data_in): #sigma_d, press, dia, c_kor, c_minus, fi, s_prin=0.0, dav='vn', l=0, E=0):
-        import math
         """ 
         in data_in(name, steel, press, temp, sigma_d, 
             dia, c_kor, c_minus, fi, s_prin,
@@ -189,6 +191,9 @@ class CalcClass(object):
             l=0 ,l3_1=0, l3_2=0 E=0)
           out data_out [0] - s_calcr [1] - s_calc [2] - s_prin [3] - press_d [4] - c
         """
+        
+        import math
+        
         do_out = data_out()
         if data_in.dav == 'vn':
             do_out.elR = math.pow(data_in.dia, 2)/(4*data_in.elH)

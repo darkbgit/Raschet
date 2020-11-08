@@ -24,20 +24,27 @@ class MyWindow(QtWidgets.QMainWindow):
         for k in data_fiz.sigma_list.keys():
             steelList.setData(steelList.index(i), k)
             i = i + 1
+        del i
         self.steel_cbov.setModel(steelList)
         self.steel_cbon.setModel(steelList)
+        self.steel_cbev.setModel(steelList)
+        self.steel_cben.setModel(steelList)
         
         self.pbPredov.clicked.connect(self.pred_calcov)
         self.pbPredon.clicked.connect(self.pred_calcon)
-        #self.pbPredov.clicked.connect(self.pred_calcov)
-        #self.pbPredov.clicked.connect(self.pred_calcov)
+        self.pbPredev.clicked.connect(self.pred_calcev)
+        
 
         self.pbCalcov.clicked.connect(self.calcov)
         self.pbCalcon.clicked.connect(self.calcon)
-        #self.pbCalcov.clicked.connect(self.calcov)
-        #self.pbCalcov.clicked.connect(self.calcov)
-        #self.pbCalcov.clicked.connect(self.calcov)
+        #self.pbCalcev.clicked.connect(self.calcev)
+
+
+        self.pbfiov.clicked.connect(self.fishow)
+
         self.pbMakeWord.clicked.connect(self.makeWord)
+
+        self.pbHev.clicked.connect(self.elGOSTshow)
 
 
 
@@ -46,9 +53,26 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.pbShowSxemaov.clicked.connect(self.ShowCalcSxemaOv)
 
+    #def getHel(self):
+    #    try:
+    #       dia = dia_leev.text()
+
+    def elGOSTshow(self):
+        global windowgostel
+        windowgostel = GostEl()
+        windowgostel.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+        windowgostel.show()
+
+    def fishow(self):
+        global windowfi
+        windowfi = Fi()
+        windowfi.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+        windowfi.show()
+
     def ShowCalcSxemaOv(self):
         global windowcalc
         windowcalc = ObCalcSxema()
+        windowcalc.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
         windowcalc.show()
 
 
@@ -66,7 +90,7 @@ class MyWindow(QtWidgets.QMainWindow):
     def pred_calcov(self):
         data_in = CalcClass.data_in() 
         data_out = CalcClass.data_out()
-        
+        data_in.dav = 'vn'
         data_inerr = str('')
         try:
             if int(self.temp_leov.text()) in range (20, 1000):
@@ -212,6 +236,75 @@ class MyWindow(QtWidgets.QMainWindow):
             dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', data_inerr)
             result = dialog.exec()
 
+    def pred_calcev(self):
+        data_in = CalcClass.data_in() 
+        data_out = CalcClass.data_out()
+        data_in.dav = 'vn'
+        data_inerr = str('')
+        try:
+            if int(self.temp_leev.text()) in range (20, 1000):
+                data_in.temp = int(self.temp_leev.text())
+            else:
+                data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
+        except:
+            data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
+        try:
+            if float(self.press_leev.text()) > 0 and float(self.press_leev.text()) < 1000:
+                data_in.press = float(self.press_leev.text())
+            else:
+                data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
+        except:
+            data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
+
+        data_in.steel = self.steel_cbev.currentText()
+
+        try:
+            if float(self.fi_leev.text()) > 0 and float(self.fi_leev.text()) <= 1:
+                data_in.fi = float(self.fi_leev.text())
+            else:
+                data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
+        except:
+            data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
+        
+        try:
+            if int(self.dia_leev.text()) > 0:
+                data_in.dia = int(self.dia_leev.text())
+            else:
+                data_inerr = data_inerr + 'D неверные данные\n'
+        except:
+            data_inerr = data_inerr + 'D неверные данные\n'
+
+        try:
+            if float(self.c1_leev.text()) >= 0:
+                data_in.c_kor = float(self.c1_leev.text())
+            else:
+                data_inerr = data_inerr + 'c1 неверные данные\n'
+        except:
+            data_inerr = data_inerr + 'c1 неверные данные\n'
+
+        try:
+            if float(self.c2_leev.text()) >= 0:
+                data_in.c_minus = float(self.c2_leev.text())
+            else:
+                data_inerr = data_inerr + 'c2 неверные данные\n'
+        except:
+            data_inerr = data_inerr + 'c2 неверные данные\n'
+        
+        if data_inerr == '':
+            cc = CalcClass.CalcClass()
+            self.sigma_leev.setReadOnly = False
+            self.sigma_leev.setText(str(cc.get_sigma(data_in.steel, data_in.temp)))
+            data_in.sigma_d = float(self.sigma_leev.text())#cc.get_sigma(data_in.steel, data_in.temp)#
+            self.sigma_leev.setReadOnly = True
+            data_out = cc.calc_el(data_in)
+            self.c_leev.setText(str(round(data_out.c, 2)))
+            self.statusBar().showMessage(f'sp={data_out.s_calc:.3f} мм')
+            self.s_calc_lev.setText(f'sp={data_out.s_calc:.3f} мм')
+        else:
+            dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', data_inerr)
+            result = dialog.exec()
+
+
     def calcov(self):
         data_in = CalcClass.data_in()
         data_out = CalcClass.data_out()
@@ -236,7 +329,10 @@ class MyWindow(QtWidgets.QMainWindow):
 
         data_in.steel = self.steel_cbov.currentText()
 
-        data_in.sigma_d = float(self.sigma_leov.text())
+        try:
+            data_in.sigma_d = float(self.sigma_leov.text())
+        except:
+            data_inerr = data_inerr + '[σ] неверные данные\n'
 
         try:
             if float(self.fi_leov.text()) > 0 and float(self.fi_leov.text()) <= 1:
@@ -325,8 +421,15 @@ class MyWindow(QtWidgets.QMainWindow):
 
         data_in.steel = self.steel_cbon.currentText()
 
-        data_in.sigma_d = float(self.sigma_leon.text())
-        data_in.E = float(self.E_leon.text())
+        try:
+            data_in.sigma_d = float(self.sigma_leon.text())
+        except:
+            data_inerr = data_inerr + '[σ] неверные данные\n'
+
+        try:
+            data_in.E = float(self.E_leon.text())
+        except:
+            data_inerr = data_inerr + 'E неверные данные\n'
 
         try:
             if float(self.fi_leon.text()) > 0 and float(self.fi_leon.text()) <= 1:
@@ -398,6 +501,8 @@ class MyWindow(QtWidgets.QMainWindow):
             dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', data_inerr)
             result = dialog.exec()
 
+
+
     def makeWord(self):
         self.pbMakeWord.setEnabled(False)
         for i in range(0, word_lv.rowCount()):
@@ -421,6 +526,78 @@ class ObCalcSxema(QtWidgets.QWidget):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         uic.loadUi('obvn.ui', self)
+
+class Fi(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self, parent)
+        uic.loadUi('FiForm.ui', self)
+    
+class GostEl(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self, parent)
+        uic.loadUi('GostEl.ui', self)
+
+        diaList = QtCore.QStringListModel()
+        diaList.insertRows(0, len(data_fiz.el025_list.keys()))
+        i = 0
+        for k in data_fiz.el025_list.keys():
+            diaList.setData(diaList.index(i), k)
+            i += 1
+        del i
+        self.diagostel_cb.setModel(diaList)
+        self.diagostel_cb.currentIndexChanged.connect(self.diachange)
+        self.sgostel_cb.currentIndexChanged.connect(self.schange)
+
+         
+    #    self.pbGostElOK.connect(self.getdata_el)
+
+    #def getdata_el(self):
+
+    def diachange(self):
+        sList = QtCore.QStringListModel()
+        if data_fiz.el025_list[self.diagostel_cb.currentText()][-1] == 'a':
+            sList.insertRows(0, len(data_fiz.el025_list[self.diagostel_cb.currentText()]) - 2)
+            i = 0
+            for k in data_fiz.el025_list[self.diagostel_cb.currentText()]:
+                if type(k) == int:
+                    sList.setData(sList.index(i), k)
+                    i += 1
+            del i
+        else:
+            sList.insertRows(0, len(data_fiz.el025_list[self.diagostel_cb.currentText()]) - 2 - len(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')))
+            i = 0
+            for k in data_fiz.el025_list[self.diagostel_cb.currentText()]:
+                if type(k) == int:
+                    sList.setData(sList.index(i), k)
+                    i += 1
+            del i
+
+        self.sgostel_cb.setModel(sList)
+
+
+    def schange(self):
+        if data_fiz.el025_list[self.diagostel_cb.currentText()][-1] == 'a':
+            H = data_fiz.el025_list[self.diagostel_cb.currentText()][-2][1]
+            h1 = data_fiz.el025_list[self.diagostel_cb.currentText()][-2][0]
+        else:
+            ind =  data_fiz.el025_list[self.diagostel_cb.currentText()].index(int(self.sgostel_cb.currentText()))
+
+            if ind >= int(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')[-1]):
+                H = data_fiz.el025_list[self.diagostel_cb.currentText()][-2][1]
+                h1 = data_fiz.el025_list[self.diagostel_cb.currentText()][-2][0]
+            elif ind >= int(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')[-2]) or len(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')) == 1:
+                H = data_fiz.el025_list[self.diagostel_cb.currentText()][-3][1]
+                h1 = data_fiz.el025_list[self.diagostel_cb.currentText()][-3][0]
+            elif ind >= int(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')[-3]) or len(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')) == 2:
+                H = data_fiz.el025_list[self.diagostel_cb.currentText()][-4][1]
+                h1 = data_fiz.el025_list[self.diagostel_cb.currentText()][-4][0]
+            else:
+                H =''
+                h1 = ''
+
+        self.Hgostel_le.setText(str(H))
+        self.h1gostel_le.setText(str(h1))
+
         
 
 

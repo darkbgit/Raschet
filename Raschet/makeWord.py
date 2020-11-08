@@ -221,7 +221,7 @@ def makeWord_obnar(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum
     doc.save(docum)
 
 
-def makeWord_elvn(data_in:CalcClass.data_in, data_out:CalcClass_datadata_out, docum=None):
+def makeWord_elvn(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum=None):
 
     doc = docx.Document(docum)
     # добавить полусферическое
@@ -318,7 +318,7 @@ def makeWord_elvn(data_in:CalcClass.data_in, data_out:CalcClass_datadata_out, do
         doc.add_paragraph().add_run('0.002≤(s_1-c)/(D)≤0.1').font.math = True
         doc.add_paragraph().add_run(f'0.002≤({data_in.s_prin}-{data_out.c:.2f})/({data_in.dia})={(data_in.s_prin-data_out.c)/data_in.dia:.3f}≤0.1').font.math = True
         doc.add_paragraph().add_run('0.2≤H/D≤0.5').font.math = True
-        doc.add_paragraph().add_run(f'0.2≤{data_in.elH}/{data_in.dia}<0.5}={data_in.elH/data_in.dia:.3f}<0.5').font.math = True
+        doc.add_paragraph().add_run(f'0.2≤{data_in.elH}/{data_in.dia}<0.5={data_in.elH/data_in.dia:.3f}<0.5').font.math = True
     elif data_in.met == 'torvn' or data_in.met == 'tornar':
         p.add_run('при D < 200 мм')
         doc.add_paragraph().add_run('(s-c)/(D)≤0.3').font.math = True
