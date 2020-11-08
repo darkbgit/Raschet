@@ -213,6 +213,9 @@ class CalcClass(object):
             do_out.s_calcr2 = 1.2*data_in.press*do_out.elR/(2*data_in.sigma_d)
             do_out.c = data_in.c_kor + data_in.c_minus + data_in.c_3
             do_out.s_calc = do_out.s_calcr + do_out.c
+            do_out.elke = 0.9 # добавить ке для полусферических =1
+            do_out.s_calcr1 = (do_out.elke * do_out.elR) / 161 * math.sqrt((data_in.ny * data_in.press) / (0.00001*data_in.E))
+            do_out.s_calcr = max(do_out.s_calcr1, do_out.s_calcr2)
             if data_in.s_prin == 0.0:
                 do_out.elke = 0.9 # добавить ке для полусферических =1
                 do_out.s_calcr1 = (do_out.elke * do_out.elR) / 161 * math.sqrt((data_in.ny * data_in.press) / (0.00001*data_in.E))

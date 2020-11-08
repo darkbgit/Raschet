@@ -2,16 +2,31 @@
 <ui version="4.0">
  <class>GostEl</class>
  <widget class="QWidget" name="GostEl">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>241</width>
-    <height>200</height>
+    <width>240</width>
+    <height>150</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>240</width>
+    <height>150</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>240</width>
+    <height>150</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Размеры по ГОСТ H=0,25D</string>
   </property>
   <widget class="QWidget" name="gridLayoutWidget">
    <property name="geometry">
@@ -23,18 +38,21 @@
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_4">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_3">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;h&lt;span style=&quot; vertical-align:sub;&quot;&gt;1&lt;/span&gt;, мм&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>H, мм</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
-     <widget class="QLineEdit" name="h1gostel_le"/>
-    </item>
-    <item row="4" column="1">
-     <widget class="QLineEdit" name="lineEdit"/>
+    <item row="1" column="1">
+     <widget class="QComboBox" name="sgostel_cb"/>
     </item>
     <item row="0" column="1">
      <widget class="QComboBox" name="diagostel_cb"/>
@@ -49,13 +67,6 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="label_5">
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="label">
       <property name="text">
@@ -63,17 +74,7 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>H, мм</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QComboBox" name="sgostel_cb"/>
-    </item>
-    <item row="5" column="1">
+    <item row="4" column="1">
      <widget class="QFrame" name="frame">
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -84,8 +85,8 @@
       <widget class="QPushButton" name="pbGostElOK">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>20</y>
+         <x>0</x>
+         <y>10</y>
          <width>75</width>
          <height>23</height>
         </rect>
@@ -97,8 +98,8 @@
       <widget class="QPushButton" name="pbGostElCancel">
        <property name="geometry">
         <rect>
-         <x>90</x>
-         <y>20</y>
+         <x>80</x>
+         <y>10</y>
          <width>75</width>
          <height>23</height>
         </rect>
@@ -108,6 +109,16 @@
        </property>
       </widget>
      </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;h&lt;span style=&quot; vertical-align:sub;&quot;&gt;1&lt;/span&gt;, мм&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QLineEdit" name="h1gostel_le"/>
     </item>
    </layout>
   </widget>

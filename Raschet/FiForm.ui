@@ -3,7 +3,7 @@
  <class>FiForm</class>
  <widget class="QWidget" name="FiForm">
   <property name="windowModality">
-   <enum>Qt::WindowModal</enum>
+   <enum>Qt::ApplicationModal</enum>
   </property>
   <property name="geometry">
    <rect>

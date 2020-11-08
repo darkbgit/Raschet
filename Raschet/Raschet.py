@@ -25,39 +25,81 @@ class MyWindow(QtWidgets.QMainWindow):
             steelList.setData(steelList.index(i), k)
             i = i + 1
         del i
-        self.steel_cbov.setModel(steelList)
-        self.steel_cbon.setModel(steelList)
-        self.steel_cbev.setModel(steelList)
-        self.steel_cben.setModel(steelList)
+        self.steel_cbob.setModel(steelList)
+        self.steel_cbel.setModel(steelList)
+        self.steel_cbobyk.setModel(steelList)
         
-        self.pbPredov.clicked.connect(self.pred_calcov)
-        self.pbPredon.clicked.connect(self.pred_calcon)
-        self.pbPredev.clicked.connect(self.pred_calcev)
+        
+        self.pbPredob.clicked.connect(self.pred_calcob)
+        self.pbPredel.clicked.connect(self.pred_calcel)
         
 
-        self.pbCalcov.clicked.connect(self.calcov)
-        self.pbCalcon.clicked.connect(self.calcon)
-        #self.pbCalcev.clicked.connect(self.calcev)
+        self.pbCalcob.clicked.connect(self.calcob)
+        self.pbCalcel.clicked.connect(self.calcel)
 
 
-        self.pbfiov.clicked.connect(self.fishow)
+        self.pbfiob.clicked.connect(self.fishow)
+        self.pbfiel.clicked.connect(self.fishow)
 
         self.pbMakeWord.clicked.connect(self.makeWord)
 
-        self.pbHev.clicked.connect(self.elGOSTshow)
+        self.pbHel.clicked.connect(self.ShowGOSTel)
 
+        self.vn_rbob.toggled.connect(self.vnnarob)
+        self.vn_rbobyk.toggled.connect(self.vnnarobyk)
+        self.vn_rbel.toggled.connect(self.vnnarel)
 
 
         #self.lvCalc.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.lvCalc.customContextMenuRequested.connect(self.context_lv)
 
-        self.pbShowSxemaov.clicked.connect(self.ShowCalcSxemaOv)
+        self.pbShowSxemaob.clicked.connect(self.ShowCalcSxemaOb)
+        self.pbShowSxemael.clicked.connect(self.ShowCalcSxemaEl)
+
+        self.action_about.triggered.connect(self.ShowAbout)
+        self.action_close.triggered.connect(self.close)
+
+        self.pbobtoobyk.clicked.connect(self.obtoobyk)
 
     #def getHel(self):
     #    try:
     #       dia = dia_leev.text()
 
-    def elGOSTshow(self):
+    def obtoobyk(self):
+        self.name_leobyk.setText(self.name_leob.text())
+        self.temp_leobyk.setText(self.temp_leob.text())
+        self.tabWidget.setCurrentIndex(1)
+
+    def vnnarob(self):
+        if self.vn_rbob.isChecked() == True:
+            self.E_leob.setEnabled(False)
+            self.pbGetEob.setEnabled(False)
+            self.l_leob.setEnabled(False)
+            self.pbGetlob.setEnabled(False)
+        else:
+            self.E_leob.setEnabled(True)
+            self.pbGetEob.setEnabled(True)
+            self.l_leob.setEnabled(True)
+            self.pbGetlob.setEnabled(True)
+
+    def vnnarobyk(self):
+        if self.vn_rbobyk.isChecked() == True:
+            self.E_leobyk.setEnabled(False)
+            self.pbGetEobyk.setEnabled(False)
+            self.l_leobyk.setEnabled(False)
+            self.pbGetlobyk.setEnabled(False)
+        else:
+            self.E_leobyk.setEnabled(True)
+            self.pbGetEobyk.setEnabled(True)
+            self.l_leobyk.setEnabled(True)
+            self.pbGetlobyk.setEnabled(True)
+
+    def vnnarel(self):
+        pass
+            
+
+
+    def ShowGOSTel(self):
         global windowgostel
         windowgostel = GostEl()
         windowgostel.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
@@ -69,11 +111,24 @@ class MyWindow(QtWidgets.QMainWindow):
         windowfi.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
         windowfi.show()
 
-    def ShowCalcSxemaOv(self):
+    def ShowCalcSxemaOb(self):
         global windowcalc
         windowcalc = ObCalcSxema()
         windowcalc.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
         windowcalc.show()
+
+    def ShowCalcSxemaEl(self):
+        global windowcalcel
+        windowcalcel = ElCalcSxema()
+        windowcalcel.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+        windowcalcel.show()
+
+    def ShowAbout(self):
+        global windowabout
+        windowabout = About()
+        windowabout.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+        windowabout.show()
+
 
 
     def context_lv(self, point):
@@ -86,6 +141,11 @@ class MyWindow(QtWidgets.QMainWindow):
         menu.addAction('Удалить')
         menu.exec(self.lvCalc.mapToGlobal(point))
 
+    def pred_calcob(self):
+        if self.vn_rbob.isChecked() == True:
+            self.pred_calcov()
+        else:
+            self.pred_calcon()
 
     def pred_calcov(self):
         data_in = CalcClass.data_in() 
@@ -93,49 +153,49 @@ class MyWindow(QtWidgets.QMainWindow):
         data_in.dav = 'vn'
         data_inerr = str('')
         try:
-            if int(self.temp_leov.text()) in range (20, 1000):
-                data_in.temp = int(self.temp_leov.text())
+            if int(self.temp_leob.text()) in range (20, 1000):
+                data_in.temp = int(self.temp_leob.text())
             else:
                 data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
         except:
             data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
         try:
-            if float(self.press_leov.text()) > 0 and float(self.press_leov.text()) < 1000:
-                data_in.press = float(self.press_leov.text())
+            if float(self.press_leob.text()) > 0 and float(self.press_leob.text()) < 1000:
+                data_in.press = float(self.press_leob.text())
             else:
                 data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
         except:
             data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
 
-        data_in.steel = self.steel_cbov.currentText()
+        data_in.steel = self.steel_cbob.currentText()
 
         try:
-            if float(self.fi_leov.text()) > 0 and float(self.fi_leov.text()) <= 1:
-                data_in.fi = float(self.fi_leov.text())
+            if float(self.fi_leob.text()) > 0 and float(self.fi_leob.text()) <= 1:
+                data_in.fi = float(self.fi_leob.text())
             else:
                 data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
         except:
             data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
         
         try:
-            if int(self.dia_leov.text()) > 0:
-                data_in.dia = int(self.dia_leov.text())
+            if int(self.dia_leob.text()) > 0:
+                data_in.dia = int(self.dia_leob.text())
             else:
                 data_inerr = data_inerr + 'D неверные данные\n'
         except:
             data_inerr = data_inerr + 'D неверные данные\n'
 
         try:
-            if float(self.c1_leov.text()) >= 0:
-                data_in.c_kor = float(self.c1_leov.text())
+            if float(self.c1_leob.text()) >= 0:
+                data_in.c_kor = float(self.c1_leob.text())
             else:
                 data_inerr = data_inerr + 'c1 неверные данные\n'
         except:
             data_inerr = data_inerr + 'c1 неверные данные\n'
 
         try:
-            if float(self.c2_leov.text()) >= 0:
-                data_in.c_minus = float(self.c2_leov.text())
+            if float(self.c2_leob.text()) >= 0:
+                data_in.c_minus = float(self.c2_leob.text())
             else:
                 data_inerr = data_inerr + 'c2 неверные данные\n'
         except:
@@ -143,14 +203,14 @@ class MyWindow(QtWidgets.QMainWindow):
         
         if data_inerr == '':
             cc = CalcClass.CalcClass()
-            self.sigma_leov.setReadOnly = False
-            self.sigma_leov.setText(str(cc.get_sigma(data_in.steel, data_in.temp)))
-            data_in.sigma_d = float(self.sigma_leov.text())#cc.get_sigma(data_in.steel, data_in.temp)#
-            self.sigma_leov.setReadOnly = True
+            self.sigma_leob.setReadOnly = False
+            self.sigma_leob.setText(str(cc.get_sigma(data_in.steel, data_in.temp)))
+            data_in.sigma_d = float(self.sigma_leob.text())#cc.get_sigma(data_in.steel, data_in.temp)#
+            self.sigma_leob.setReadOnly = True
             data_out = cc.calc_ob(data_in)
-            self.c_leov.setText(str(round(data_out.c, 2)))
+            self.c_leob.setText(str(round(data_out.c, 2)))
             self.statusBar().showMessage(f'sp={data_out.s_calc:.3f} мм')
-            self.s_calc_lov.setText(f'sp={data_out.s_calc:.3f} мм')
+            self.s_calc_lob.setText(f'sp={data_out.s_calc:.3f} мм')
         else:
             dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', data_inerr)
             result = dialog.exec()
@@ -161,57 +221,57 @@ class MyWindow(QtWidgets.QMainWindow):
         data_in.dav = 'nar'
         data_inerr = str('')
         try:
-            if int(self.temp_leon.text()) in range (20, 1000):
-                data_in.temp = int(self.temp_leon.text())
+            if int(self.temp_leob.text()) in range (20, 1000):
+                data_in.temp = int(self.temp_leob.text())
             else:
                 data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
         except:
             data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
         try:
-            if float(self.press_leon.text()) > 0 and float(self.press_leon.text()) < 1000:
-                data_in.press = float(self.press_leon.text())
+            if float(self.press_leob.text()) > 0 and float(self.press_leob.text()) < 1000:
+                data_in.press = float(self.press_leob.text())
             else:
                 data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
         except:
             data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
 
-        data_in.steel = self.steel_cbon.currentText()
+        data_in.steel = self.steel_cbob.currentText()
 
         try:
-            if float(self.fi_leon.text()) > 0 and float(self.fi_leon.text()) <= 1:
-                data_in.fi = float(self.fi_leon.text())
+            if float(self.fi_leob.text()) > 0 and float(self.fi_leob.text()) <= 1:
+                data_in.fi = float(self.fi_leob.text())
             else:
                 data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
         except:
             data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
         
         try:
-            if int(self.dia_leon.text()) > 0:
-                data_in.dia = int(self.dia_leon.text())
+            if int(self.dia_leob.text()) > 0:
+                data_in.dia = int(self.dia_leob.text())
             else:
                 data_inerr = data_inerr + 'D неверные данные\n'
         except:
             data_inerr = data_inerr + 'D неверные данные\n'
 
         try:
-            if float(self.c1_leon.text()) >= 0:
-                data_in.c_kor = float(self.c1_leon.text())
+            if float(self.c1_leob.text()) >= 0:
+                data_in.c_kor = float(self.c1_leob.text())
             else:
                 data_inerr = data_inerr + 'c1 неверные данные\n'
         except:
             data_inerr = data_inerr + 'c1 неверные данные\n'
 
         try:
-            if float(self.c2_leon.text()) >= 0:
-                data_in.c_minus = float(self.c2_leon.text())
+            if float(self.c2_leob.text()) >= 0:
+                data_in.c_minus = float(self.c2_leob.text())
             else:
                 data_inerr = data_inerr + 'c2 неверные данные\n'
         except:
             data_inerr = data_inerr + 'c2 неверные данные\n'
         
         try:
-            if float(self.l_leon.text()) >= 0:
-                data_in.l = float(self.l_leon.text())
+            if float(self.l_leob.text()) >= 0:
+                data_in.l = float(self.l_leob.text())
             else:
                 data_inerr = data_inerr + 'l неверные данные\n'
         except:
@@ -220,147 +280,189 @@ class MyWindow(QtWidgets.QMainWindow):
 
         if data_inerr == '':
             cc = CalcClass.CalcClass()
-            self.sigma_leon.setReadOnly = False
-            self.sigma_leon.setText(str(cc.get_sigma(data_in.steel, data_in.temp)))
-            data_in.sigma_d = float(self.sigma_leon.text())#cc.get_sigma(data_in.steel, data_in.temp)#
-            self.sigma_leon.setReadOnly = True
-            self.E_leon.setReadOnly = False
-            self.E_leon.setText(str(cc.get_E('Carbon', data_in.temp)))
-            data_in.E = float(self.E_leon.text())#cc.get_sigma(data_in.steel, data_in.temp)#
-            self.E_leon.setReadOnly = True
+            self.sigma_leob.setReadOnly = False
+            self.sigma_leob.setText(str(cc.get_sigma(data_in.steel, data_in.temp)))
+            data_in.sigma_d = float(self.sigma_leob.text())#cc.get_sigma(data_in.steel, data_in.temp)#
+            self.sigma_leob.setReadOnly = True
+            self.E_leob.setReadOnly = False
+            self.E_leob.setText(str(cc.get_E('Carbon', data_in.temp)))
+            data_in.E = float(self.E_leob.text())#cc.get_sigma(data_in.steel, data_in.temp)#
+            self.E_leob.setReadOnly = True
             data_out = cc.calc_ob(data_in)
-            self.c_leon.setText(str(round(data_out.c, 2)))
+            self.c_leob.setText(str(round(data_out.c, 2)))
             self.statusBar().showMessage(f'sp={data_out.s_calc:.3f} мм')
-            self.s_calc_lon.setText(f'sp={data_out.s_calc:.3f} мм')
+            self.s_calc_lob.setText(f'sp={data_out.s_calc:.3f} мм')
         else:
             dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', data_inerr)
             result = dialog.exec()
 
-    def pred_calcev(self):
+    #def pred_calcel(self):
+    #    if self.vn_rbel.isChecked() == True:
+    #        self.pred_calcev()
+    #    else:
+    #        self.pred_calcen()
+
+    def pred_calcel(self):
         data_in = CalcClass.data_in() 
         data_out = CalcClass.data_out()
-        data_in.dav = 'vn'
+        if self.vn_rbel.isChecked() == True:
+            data_in.dav = 'vn'
+        else:
+            data_in.dav = 'nar'
+        
         data_inerr = str('')
         try:
-            if int(self.temp_leev.text()) in range (20, 1000):
-                data_in.temp = int(self.temp_leev.text())
+            if int(self.temp_leel.text()) in range (20, 1000):
+                data_in.temp = int(self.temp_leel.text())
             else:
                 data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
         except:
             data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
         try:
-            if float(self.press_leev.text()) > 0 and float(self.press_leev.text()) < 1000:
-                data_in.press = float(self.press_leev.text())
+            if float(self.press_leel.text()) > 0 and float(self.press_leel.text()) < 1000:
+                data_in.press = float(self.press_leel.text())
             else:
                 data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
         except:
             data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
 
-        data_in.steel = self.steel_cbev.currentText()
+        data_in.steel = self.steel_cbel.currentText()
 
         try:
-            if float(self.fi_leev.text()) > 0 and float(self.fi_leev.text()) <= 1:
-                data_in.fi = float(self.fi_leev.text())
+            if float(self.fi_leel.text()) > 0 and float(self.fi_leel.text()) <= 1:
+                data_in.fi = float(self.fi_leel.text())
             else:
                 data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
         except:
             data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
         
         try:
-            if int(self.dia_leev.text()) > 0:
-                data_in.dia = int(self.dia_leev.text())
+            if int(self.dia_leel.text()) > 0:
+                data_in.dia = int(self.dia_leel.text())
             else:
                 data_inerr = data_inerr + 'D неверные данные\n'
         except:
             data_inerr = data_inerr + 'D неверные данные\n'
 
         try:
-            if float(self.c1_leev.text()) >= 0:
-                data_in.c_kor = float(self.c1_leev.text())
+            if int(self.H_leel.text()) > 0:
+                data_in.elH = int(self.H_leel.text())
+            else:
+                data_inerr = data_inerr + 'H неверные данные\n'
+        except:
+            data_inerr = data_inerr + 'H неверные данные\n'
+
+        try:
+            if int(self.h1_leel.text()) > 0:
+                data_in.elh1 = int(self.h1_leel.text())
+            else:
+                data_inerr = data_inerr + 'h1 неверные данные\n'
+        except:
+            data_inerr = data_inerr + 'h1 неверные данные\n'
+
+        try:
+            if float(self.c1_leel.text()) >= 0:
+                data_in.c_kor = float(self.c1_leel.text())
             else:
                 data_inerr = data_inerr + 'c1 неверные данные\n'
         except:
             data_inerr = data_inerr + 'c1 неверные данные\n'
 
         try:
-            if float(self.c2_leev.text()) >= 0:
-                data_in.c_minus = float(self.c2_leev.text())
+            if float(self.c2_leel.text()) >= 0:
+                data_in.c_minus = float(self.c2_leel.text())
             else:
                 data_inerr = data_inerr + 'c2 неверные данные\n'
         except:
             data_inerr = data_inerr + 'c2 неверные данные\n'
+
+        try:
+            if float(self.c3_leel.text()) >= 0:
+                data_in.c_3 = float(self.c3_leel.text())
+            else:
+                data_inerr = data_inerr + 'c3 неверные данные\n'
+        except:
+            data_inerr = data_inerr + 'c3 неверные данные\n'
         
         if data_inerr == '':
             cc = CalcClass.CalcClass()
-            self.sigma_leev.setReadOnly = False
-            self.sigma_leev.setText(str(cc.get_sigma(data_in.steel, data_in.temp)))
-            data_in.sigma_d = float(self.sigma_leev.text())#cc.get_sigma(data_in.steel, data_in.temp)#
-            self.sigma_leev.setReadOnly = True
+            self.sigma_leel.setReadOnly = False
+            self.sigma_leel.setText(str(cc.get_sigma(data_in.steel, data_in.temp)))
+            data_in.sigma_d = float(self.sigma_leel.text())#cc.get_sigma(data_in.steel, data_in.temp)#
+            self.sigma_leel.setReadOnly = True
             data_out = cc.calc_el(data_in)
-            self.c_leev.setText(str(round(data_out.c, 2)))
+            self.c_leel.setText(str(round(data_out.c, 2)))
             self.statusBar().showMessage(f'sp={data_out.s_calc:.3f} мм')
-            self.s_calc_lev.setText(f'sp={data_out.s_calc:.3f} мм')
+            self.s_calc_lel.setText(f'sp={data_out.s_calc:.3f} мм')
         else:
             dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', data_inerr)
             result = dialog.exec()
 
+    def pred_calcen(self):
+        pass
 
+    def calcob(self):
+        if self.vn_rbob.isChecked() == True:
+            self.calcov()
+        else:
+            self.calcon()
+           
     def calcov(self):
         data_in = CalcClass.data_in()
         data_out = CalcClass.data_out()
         data_in.met = 'obvn'
         data_inerr = str('')
         
-        data_in.name = self.name_leov.text()
+        data_in.name = self.name_leob.text()
         try:
-            if int(self.temp_leov.text()) in range (20, 1000):
-                data_in.temp = int(self.temp_leov.text())
+            if int(self.temp_leob.text()) in range (20, 1000):
+                data_in.temp = int(self.temp_leob.text())
             else:
                 data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
         except:
             data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
         try:
-            if float(self.press_leov.text()) > 0 and float(self.press_leov.text()) < 1000:
-                data_in.press = float(self.press_leov.text())
+            if float(self.press_leob.text()) > 0 and float(self.press_leob.text()) < 1000:
+                data_in.press = float(self.press_leob.text())
             else:
                 data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
         except:
             data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
 
-        data_in.steel = self.steel_cbov.currentText()
+        data_in.steel = self.steel_cbob.currentText()
 
         try:
-            data_in.sigma_d = float(self.sigma_leov.text())
+            data_in.sigma_d = float(self.sigma_leob.text())
         except:
             data_inerr = data_inerr + '[σ] неверные данные\n'
 
         try:
-            if float(self.fi_leov.text()) > 0 and float(self.fi_leov.text()) <= 1:
-                data_in.fi = float(self.fi_leov.text())
+            if float(self.fi_leob.text()) > 0 and float(self.fi_leob.text()) <= 1:
+                data_in.fi = float(self.fi_leob.text())
             else:
                 data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
         except:
             data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
         
         try:
-            if int(self.dia_leov.text()) > 0:
-                data_in.dia = int(self.dia_leov.text())
+            if int(self.dia_leob.text()) > 0:
+                data_in.dia = int(self.dia_leob.text())
             else:
                 data_inerr = data_inerr + 'D неверные данные\n'
         except:
             data_inerr = data_inerr + 'D неверные данные\n'
 
         try:
-            if float(self.c1_leov.text()) >= 0:
-                data_in.c_kor = float(self.c1_leov.text())
+            if float(self.c1_leob.text()) >= 0:
+                data_in.c_kor = float(self.c1_leob.text())
             else:
                 data_inerr = data_inerr + 'c1 неверные данные\n'
         except:
             data_inerr = data_inerr + 'c1 неверные данные\n'
 
         try:
-            if float(self.c2_leov.text()) >= 0:
-                data_in.c_minus = float(self.c2_leov.text())
+            if float(self.c2_leob.text()) >= 0:
+                data_in.c_minus = float(self.c2_leob.text())
             else:
                 data_inerr = data_inerr + 'c2 неверные данные\n'
         except:
@@ -372,8 +474,8 @@ class MyWindow(QtWidgets.QMainWindow):
             cc = CalcClass.CalcClass()
             data_out = cc.calc_ob(data_in)
             try:
-                if float(self.s_leov.text()) >= data_out.s_calc:
-                    data_in.s_prin = float(self.s_leov.text())
+                if float(self.s_leob.text()) >= data_out.s_calc:
+                    data_in.s_prin = float(self.s_leob.text())
                     data_out = cc.calc_ob(data_in)
                     data_word.append([data_in, data_out])
                     i = word_lv.rowCount()
@@ -382,8 +484,8 @@ class MyWindow(QtWidgets.QMainWindow):
                     self.lvCalc.setModel(word_lv)
 
                     self.statusBar().showMessage(f'sp={data_out.s_calc:.3f} мм, [p]={data_out.press_d:.3f} МПа')
-                    self.s_calc_lov.setText(f'sp={data_out.s_calc:.3f} мм')
-                    self.press_d_lov.setText(f'[p]={data_out.press_d:.3f} МПа')
+                    self.s_calc_lob.setText(f'sp={data_out.s_calc:.3f} мм')
+                    self.press_d_lob.setText(f'[p]={data_out.press_d:.3f} МПа')
                 else:
                     dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', 's должно быть больше или равно sp')
                     result = dialog.exec()
@@ -403,69 +505,69 @@ class MyWindow(QtWidgets.QMainWindow):
         data_in.met = 'obnar'
         data_inerr = str('')
         
-        data_in.name = self.name_leon.text()
+        data_in.name = self.name_leob.text()
         try:
-            if int(self.temp_leon.text()) in range (20, 1000):
-                data_in.temp = int(self.temp_leon.text())
+            if int(self.temp_leob.text()) in range (20, 1000):
+                data_in.temp = int(self.temp_leob.text())
             else:
                 data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
         except:
             data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
         try:
-            if float(self.press_leon.text()) > 0 and float(self.press_leon.text()) < 1000:
-                data_in.press = float(self.press_leon.text())
+            if float(self.press_leob.text()) > 0 and float(self.press_leob.text()) < 1000:
+                data_in.press = float(self.press_leob.text())
             else:
                 data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
         except:
             data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
 
-        data_in.steel = self.steel_cbon.currentText()
+        data_in.steel = self.steel_cbob.currentText()
 
         try:
-            data_in.sigma_d = float(self.sigma_leon.text())
+            data_in.sigma_d = float(self.sigma_leob.text())
         except:
             data_inerr = data_inerr + '[σ] неверные данные\n'
 
         try:
-            data_in.E = float(self.E_leon.text())
+            data_in.E = float(self.E_leob.text())
         except:
             data_inerr = data_inerr + 'E неверные данные\n'
 
         try:
-            if float(self.fi_leon.text()) > 0 and float(self.fi_leon.text()) <= 1:
-                data_in.fi = float(self.fi_leon.text())
+            if float(self.fi_leob.text()) > 0 and float(self.fi_leob.text()) <= 1:
+                data_in.fi = float(self.fi_leob.text())
             else:
                 data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
         except:
             data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
         
         try:
-            if int(self.dia_leon.text()) > 0:
-                data_in.dia = int(self.dia_leon.text())
+            if int(self.dia_leob.text()) > 0:
+                data_in.dia = int(self.dia_leob.text())
             else:
                 data_inerr = data_inerr + 'D неверные данные\n'
         except:
             data_inerr = data_inerr + 'D неверные данные\n'
 
         try:
-            if float(self.c1_leon.text()) >= 0:
-                data_in.c_kor = float(self.c1_leon.text())
+            if float(self.c1_leob.text()) >= 0:
+                data_in.c_kor = float(self.c1_leob.text())
             else:
                 data_inerr = data_inerr + 'c1 неверные данные\n'
         except:
             data_inerr = data_inerr + 'c1 неверные данные\n'
 
         try:
-            if float(self.c2_leon.text()) >= 0:
-                data_in.c_minus = float(self.c2_leon.text())
+            if float(self.c2_leob.text()) >= 0:
+                data_in.c_minus = float(self.c2_leob.text())
             else:
                 data_inerr = data_inerr + 'c2 неверные данные\n'
         except:
             data_inerr = data_inerr + 'c2 неверные данные\n'
 
         try:
-            if float(self.l_leon.text()) >= 0:
-                data_in.l = float(self.l_leon.text())
+            if float(self.l_leob.text()) >= 0:
+                data_in.l = float(self.l_leob.text())
             else:
                 data_inerr = data_inerr + 'l неверные данные\n'
         except:
@@ -477,8 +579,8 @@ class MyWindow(QtWidgets.QMainWindow):
             cc = CalcClass.CalcClass()
             data_out = cc.calc_ob(data_in)
             try:
-                if float(self.s_leon.text()) >= data_out.s_calc:
-                    data_in.s_prin = float(self.s_leon.text())
+                if float(self.s_leob.text()) >= data_out.s_calc:
+                    data_in.s_prin = float(self.s_leob.text())
                     data_out = cc.calc_ob(data_in)
                     data_word.append([data_in, data_out])
                     i = word_lv.rowCount()
@@ -487,8 +589,8 @@ class MyWindow(QtWidgets.QMainWindow):
                     self.lvCalc.setModel(word_lv)
 
                     self.statusBar().showMessage(f'sp={data_out.s_calc:.3f} мм, [p]={data_out.press_d:.3f} МПа')
-                    self.s_calc_lon.setText(f'sp={data_out.s_calc:.3f} мм')
-                    self.press_d_lon.setText(f'[p]={data_out.press_d:.3f} МПа')
+                    self.s_calc_lob.setText(f'sp={data_out.s_calc:.3f} мм')
+                    self.press_d_lob.setText(f'[p]={data_out.press_d:.3f} МПа')
                 else:
                     dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', 's должно быть больше или равно sp')
                     result = dialog.exec()
@@ -501,6 +603,134 @@ class MyWindow(QtWidgets.QMainWindow):
             dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', data_inerr)
             result = dialog.exec()
 
+    def calcel(self):
+        data_in = CalcClass.data_in()
+        data_out = CalcClass.data_out()
+
+        data_inerr = str('')
+
+        if self.vn_rbel.isChecked() == True:
+            data_in.dav = 'vn'
+            data_in.met = 'elvn'
+        else:
+            data_in.dav = 'nar'
+            data_in.met = 'elnar'
+            try:
+                data_in.E = float(self.E_leel.text())
+            except:
+                data_inerr = data_inerr + 'E неверные данные\n'
+                        
+        data_in.name = self.name_leel.text()
+        try:
+            if int(self.temp_leel.text()) in range (20, 1000):
+                data_in.temp = int(self.temp_leel.text())
+            else:
+                data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
+        except:
+            data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
+        try:
+            if float(self.press_leel.text()) > 0 and float(self.press_leel.text()) < 1000:
+                data_in.press = float(self.press_leel.text())
+            else:
+                data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
+        except:
+            data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
+
+        data_in.steel = self.steel_cbel.currentText()
+
+        try:
+            data_in.sigma_d = float(self.sigma_leel.text())
+        except:
+            data_inerr = data_inerr + '[σ] неверные данные\n'
+                    
+        try:
+            if float(self.fi_leel.text()) > 0 and float(self.fi_leel.text()) <= 1:
+                data_in.fi = float(self.fi_leel.text())
+            else:
+                data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
+        except:
+            data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
+        
+        try:
+            if int(self.dia_leel.text()) > 0:
+                data_in.dia = int(self.dia_leel.text())
+            else:
+                data_inerr = data_inerr + 'D неверные данные\n'
+        except:
+            data_inerr = data_inerr + 'D неверные данные\n'
+
+        try:
+            if int(self.H_leel.text()) > 0:
+                data_in.elH = int(self.H_leel.text())
+            else:
+                data_inerr = data_inerr + 'H неверные данные\n'
+        except:
+            data_inerr = data_inerr + 'H неверные данные\n'
+
+        try:
+            if int(self.h1_leel.text()) > 0:
+                data_in.elh1 = int(self.h1_leel.text())
+            else:
+                data_inerr = data_inerr + 'h1 неверные данные\n'
+        except:
+            data_inerr = data_inerr + 'h1 неверные данные\n'
+
+        try:
+            if float(self.c1_leel.text()) >= 0:
+                data_in.c_kor = float(self.c1_leel.text())
+            else:
+                data_inerr = data_inerr + 'c1 неверные данные\n'
+        except:
+            data_inerr = data_inerr + 'c1 неверные данные\n'
+
+        try:
+            if float(self.c2_leel.text()) >= 0:
+                data_in.c_minus = float(self.c2_leel.text())
+            else:
+                data_inerr = data_inerr + 'c2 неверные данные\n'
+        except:
+            data_inerr = data_inerr + 'c2 неверные данные\n'
+
+        try:
+            if float(self.c3_leel.text()) >= 0:
+                data_in.c_3 = float(self.c3_leel.text())
+            else:
+                data_inerr = data_inerr + 'c3 неверные данные\n'
+        except:
+            data_inerr = data_inerr + 'c3 неверные данные\n'
+
+        
+        
+        
+        if data_inerr == '':
+            cc = CalcClass.CalcClass()
+            data_out = cc.calc_el(data_in)
+            try:
+                if float(self.s_leel.text()) >= data_out.s_calc:
+                    data_in.s_prin = float(self.s_leel.text())
+                    data_out = cc.calc_el(data_in)
+                    data_word.append([data_in, data_out])
+                    i = word_lv.rowCount()
+                    word_lv.insertRow(i)
+                    word_lv.setData(word_lv.index(i),f'{data_in.dia} мм, {data_in.press} МПа, {data_in.temp} C, {data_in.met}')
+                    self.lvCalc.setModel(word_lv)
+
+                    self.statusBar().showMessage(f'sp={data_out.s_calc:.3f} мм, [p]={data_out.press_d:.3f} МПа')
+                    self.s_calc_lel.setText(f'sp={data_out.s_calc:.3f} мм')
+                    self.press_d_lel.setText(f'[p]={data_out.press_d:.3f} МПа')
+                else:
+                    dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', 's должно быть больше или равно sp')
+                    result = dialog.exec()
+            except:
+                self.statusBar().showMessage('')
+                dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', 's неверные данные')
+                result = dialog.exec()
+            
+        else:
+            dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', data_inerr)
+            result = dialog.exec()
+
+    
 
 
     def makeWord(self):
@@ -511,6 +741,7 @@ class MyWindow(QtWidgets.QMainWindow):
             elif data_word[i][0].met == 'obnar':
                 makeWord.makeWord_obnar(data_word[i][0], data_word[i][1], '1.docx')
             elif data_word[i][0].met == 'elvn':
+                makeWord.makeWord_elvn(data_word[i][0], data_word[i][1], '1.docx')
                 pass
             elif data_word[i][0].met == 'elnar':
                 pass
@@ -526,6 +757,13 @@ class ObCalcSxema(QtWidgets.QWidget):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         uic.loadUi('obvn.ui', self)
+
+class ElCalcSxema(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self, parent)
+        uic.loadUi('elsxema.ui', self)
+    
+
 
 class Fi(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -548,10 +786,25 @@ class GostEl(QtWidgets.QWidget):
         self.diagostel_cb.currentIndexChanged.connect(self.diachange)
         self.sgostel_cb.currentIndexChanged.connect(self.schange)
 
+        self.pbGostElOK.clicked.connect(self.pressOK)
+        self.pbGostElCancel.clicked.connect(self.close)
+
          
     #    self.pbGostElOK.connect(self.getdata_el)
 
     #def getdata_el(self):
+
+    def pressOK(self):
+        mainwindow.dia_leel.setText(self.diagostel_cb.currentText())
+        mainwindow.H_leel.setText(self.Hgostel_le.text())
+        mainwindow.h1_leel.setText(self.h1gostel_le.text())
+        mainwindow.s_leel.setText(self.sgostel_cb.currentText())
+        mainwindow.c3_leel.setText(f'{float(self.sgostel_cb.currentText()) * 0.15:.2f}')
+        mainwindow.name_leel.setText(f'Днище {self.diagostel_cb.currentText()}-{self.sgostel_cb.currentText()}-{self.Hgostel_le.text()} ГОСТ 6533-78')
+        self.close()
+
+    
+
 
     def diachange(self):
         sList = QtCore.QStringListModel()
@@ -585,10 +838,13 @@ class GostEl(QtWidgets.QWidget):
             if ind >= int(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')[-1]):
                 H = data_fiz.el025_list[self.diagostel_cb.currentText()][-2][1]
                 h1 = data_fiz.el025_list[self.diagostel_cb.currentText()][-2][0]
-            elif ind >= int(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')[-2]) or len(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')) == 1:
+            elif ind < int(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')[-1]) and len(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')) == 1:
                 H = data_fiz.el025_list[self.diagostel_cb.currentText()][-3][1]
                 h1 = data_fiz.el025_list[self.diagostel_cb.currentText()][-3][0]
-            elif ind >= int(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')[-3]) or len(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')) == 2:
+            elif ind >= int(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')[-2]):
+                H = data_fiz.el025_list[self.diagostel_cb.currentText()][-3][1]
+                h1 = data_fiz.el025_list[self.diagostel_cb.currentText()][-3][0]
+            elif ind < int(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')[-2]) and len(data_fiz.el025_list[self.diagostel_cb.currentText()][-1].split('-')) == 2:
                 H = data_fiz.el025_list[self.diagostel_cb.currentText()][-4][1]
                 h1 = data_fiz.el025_list[self.diagostel_cb.currentText()][-4][0]
             else:
@@ -597,6 +853,12 @@ class GostEl(QtWidgets.QWidget):
 
         self.Hgostel_le.setText(str(H))
         self.h1gostel_le.setText(str(h1))
+
+class About(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self, parent)
+        uic.loadUi('About.ui', self)
+
 
         
 
@@ -696,6 +958,7 @@ def main():
 if __name__ == '__main__':
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    window = MyWindow()
-    window.show()
+    global mainwindow
+    mainwindow = MyWindow()
+    mainwindow.show()
     sys.exit(app.exec_())
