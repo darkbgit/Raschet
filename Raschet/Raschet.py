@@ -68,6 +68,11 @@ class MyWindow(QtWidgets.QMainWindow):
     def obtoobyk(self):
         self.name_leobyk.setText(self.name_leob.text())
         self.temp_leobyk.setText(self.temp_leob.text())
+        self.press_leobyk.setText(self.press_leob.text())
+        if self.vn_rbob.isChecked() == True:
+            self.vn_rbobyk.toggle()
+        else:
+            self.nar_rbobyk.toggle()
         self.tabWidget.setCurrentIndex(1)
 
     def vnnarob(self):
@@ -95,10 +100,15 @@ class MyWindow(QtWidgets.QMainWindow):
             self.pbGetlobyk.setEnabled(True)
 
     def vnnarel(self):
-        pass
+        if self.vn_rbel.isChecked() == True:
+            self.E_leel.setEnabled(False)
+            self.pbGetEel.setEnabled(False)
+        else:
+            self.E_leel.setEnabled(True)
+            self.pbGetEel.setEnabled(True)
             
-
-
+        
+    
     def ShowGOSTel(self):
         global windowgostel
         windowgostel = GostEl()
@@ -305,12 +315,12 @@ class MyWindow(QtWidgets.QMainWindow):
     def pred_calcel(self):
         data_in = CalcClass.data_in() 
         data_out = CalcClass.data_out()
-        if self.vn_rbel.isChecked() == True:
-            data_in.dav = 'vn'
-        else:
-            data_in.dav = 'nar'
-        
+
+        cc = CalcClass.CalcClass()
+
+                
         data_inerr = str('')
+
         try:
             if int(self.temp_leel.text()) in range (20, 1000):
                 data_in.temp = int(self.temp_leel.text())
@@ -327,6 +337,19 @@ class MyWindow(QtWidgets.QMainWindow):
             data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
 
         data_in.steel = self.steel_cbel.currentText()
+
+        if self.vn_rbel.isChecked() == True:
+            data_in.dav = 'vn'
+        else:
+            data_in.dav = 'nar'
+            self.E_leel.setReadOnly = False
+            self.E_leel.setText(str(cc.get_E('Carbon', data_in.temp)))
+            data_in.E = float(self.E_leel.text())#cc.get_sigma(data_in.steel, data_in.temp)#
+            self.E_leel.setReadOnly = True
+            try:
+                data_in.E = float(self.E_leel.text())
+            except:
+                data_inerr = data_inerr + 'E неверные данные\n'
 
         try:
             if float(self.fi_leel.text()) > 0 and float(self.fi_leel.text()) <= 1:
@@ -385,7 +408,7 @@ class MyWindow(QtWidgets.QMainWindow):
             data_inerr = data_inerr + 'c3 неверные данные\n'
         
         if data_inerr == '':
-            cc = CalcClass.CalcClass()
+            
             self.sigma_leel.setReadOnly = False
             self.sigma_leel.setText(str(cc.get_sigma(data_in.steel, data_in.temp)))
             data_in.sigma_d = float(self.sigma_leel.text())#cc.get_sigma(data_in.steel, data_in.temp)#
@@ -607,18 +630,11 @@ class MyWindow(QtWidgets.QMainWindow):
         data_in = CalcClass.data_in()
         data_out = CalcClass.data_out()
 
+        cc = CalcClass.CalcClass()
+
         data_inerr = str('')
 
-        if self.vn_rbel.isChecked() == True:
-            data_in.dav = 'vn'
-            data_in.met = 'elvn'
-        else:
-            data_in.dav = 'nar'
-            data_in.met = 'elnar'
-            try:
-                data_in.E = float(self.E_leel.text())
-            except:
-                data_inerr = data_inerr + 'E неверные данные\n'
+        
                         
         data_in.name = self.name_leel.text()
         try:
@@ -637,6 +653,21 @@ class MyWindow(QtWidgets.QMainWindow):
             data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
 
         data_in.steel = self.steel_cbel.currentText()
+
+        if self.vn_rbel.isChecked() == True:
+            data_in.dav = 'vn'
+            data_in.met = 'elvn'
+        else:
+            data_in.dav = 'nar'
+            data_in.met = 'elnar'
+            self.E_leel.setReadOnly = False
+            self.E_leel.setText(str(cc.get_E('Carbon', data_in.temp)))
+            data_in.E = float(self.E_leel.text())#cc.get_sigma(data_in.steel, data_in.temp)#
+            self.E_leel.setReadOnly = True
+            try:
+                data_in.E = float(self.E_leel.text())
+            except:
+                data_inerr = data_inerr + 'E неверные данные\n'
 
         try:
             data_in.sigma_d = float(self.sigma_leel.text())
@@ -703,7 +734,7 @@ class MyWindow(QtWidgets.QMainWindow):
         
         
         if data_inerr == '':
-            cc = CalcClass.CalcClass()
+            
             data_out = cc.calc_el(data_in)
             try:
                 if float(self.s_leel.text()) >= data_out.s_calc:
@@ -742,9 +773,8 @@ class MyWindow(QtWidgets.QMainWindow):
                 makeWord.makeWord_obnar(data_word[i][0], data_word[i][1], '1.docx')
             elif data_word[i][0].met == 'elvn':
                 makeWord.makeWord_elvn(data_word[i][0], data_word[i][1], '1.docx')
-                pass
             elif data_word[i][0].met == 'elnar':
-                pass
+                makeWord.makeWord_elnar(data_word[i][0], data_word[i][1], '1.docx')
             elif data_word[i][0].met == 'konvn':
                 pass
             elif data_word[i][0].met == 'konnar':

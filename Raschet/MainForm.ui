@@ -51,7 +51,7 @@
      <enum>QTabWidget::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <property name="usesScrollButtons">
      <bool>true</bool>
@@ -437,6 +437,9 @@
        <widget class="QLabel" name="l_name">
         <property name="text">
          <string>Название обечайки</string>
+        </property>
+        <property name="buddy">
+         <cstring>l_name</cstring>
         </property>
        </widget>
       </item>
@@ -984,7 +987,7 @@
     </widget>
     <widget class="QWidget" name="tab_el">
      <attribute name="title">
-      <string>Эллептическое днище</string>
+      <string>Эллиптическое днище</string>
      </attribute>
      <layout class="QGridLayout" name="gridLayout" columnminimumwidth="213,69,50,700">
       <item row="3" column="0" colspan="2">
@@ -1168,6 +1171,9 @@
        <widget class="QLineEdit" name="E_leel">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -1456,6 +1462,11 @@
       </item>
      </layout>
     </widget>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>Эллиптическое днище укрепление отверстий</string>
+     </attribute>
+    </widget>
     <widget class="QWidget" name="tab_konvn">
      <attribute name="title">
       <string>Конус (внутреннее)</string>
@@ -1468,6 +1479,11 @@
      </attribute>
      <layout class="QGridLayout" name="gridLayout" columnminimumwidth="213"/>
     </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="title">
+      <string>Опоры седловые</string>
+     </attribute>
+    </widget>
     <widget class="QWidget" name="tab_word">
      <attribute name="title">
       <string>Вывод в Word</string>
@@ -1477,8 +1493,8 @@
        <rect>
         <x>10</x>
         <y>30</y>
-        <width>476</width>
-        <height>85</height>
+        <width>30</width>
+        <height>13</height>
        </rect>
       </property>
       <property name="text">

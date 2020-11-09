@@ -195,8 +195,9 @@ class CalcClass(object):
         import math
         
         do_out = data_out()
+        do_out.elR = math.pow(data_in.dia, 2)/(4*data_in.elH)
         if data_in.dav == 'vn':
-            do_out.elR = math.pow(data_in.dia, 2)/(4*data_in.elH)
+            
             do_out.s_calcr = data_in.press * do_out.elR / ((2 * data_in.sigma_d * data_in.fi) - 0.5 * data_in.press)
             do_out.c = data_in.c_kor + data_in.c_minus + data_in.c_3
             do_out.s_calc = do_out.s_calcr + do_out.c
@@ -212,10 +213,11 @@ class CalcClass(object):
             
             do_out.s_calcr2 = 1.2*data_in.press*do_out.elR/(2*data_in.sigma_d)
             do_out.c = data_in.c_kor + data_in.c_minus + data_in.c_3
-            do_out.s_calc = do_out.s_calcr + do_out.c
+            
             do_out.elke = 0.9 # добавить ке для полусферических =1
             do_out.s_calcr1 = (do_out.elke * do_out.elR) / 161 * math.sqrt((data_in.ny * data_in.press) / (0.00001*data_in.E))
             do_out.s_calcr = max(do_out.s_calcr1, do_out.s_calcr2)
+            do_out.s_calc = do_out.s_calcr + do_out.c
             if data_in.s_prin == 0.0:
                 do_out.elke = 0.9 # добавить ке для полусферических =1
                 do_out.s_calcr1 = (do_out.elke * do_out.elR) / 161 * math.sqrt((data_in.ny * data_in.press) / (0.00001*data_in.E))
@@ -229,7 +231,7 @@ class CalcClass(object):
                 do_out.press_dp = 2*data_in.sigma_d*(data_in.s_prin-do_out.c)/(do_out.elR + 0.5 * (data_in.s_prin-do_out.c))
                 do_out.elx = 10 * ((data_in.s_prin-do_out.c)/data_in.dia)*(data_in.dia/(2*data_in.elH)-(2*data_in.elH)/data_in.dia)
                 do_out.elke = (1 + (2.4 + 8 * do_out.elx)*do_out.elx)/(1+(3.0+10*do_out.elx)*do_out.elx)
-                do_out.press_de = (2.6*0.00001*data_in.E)/data_in.ny*math.pow(100*(do_out.s_prin-do_out.c)/(do_out.elke*do_out.elR,2))
+                do_out.press_de = (2.6*0.00001*data_in.E)/data_in.ny*math.pow(100*(data_in.s_prin-do_out.c)/(do_out.elke*do_out.elR),2)
                 do_out.press_d = do_out.press_dp/math.sqrt(1+math.pow(do_out.press_dp/do_out.press_de,2))
             else:
                 do_out.err = 'Принятая толщина меньше расчетной'
