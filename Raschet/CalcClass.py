@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 
 
 class data_in(object):
@@ -10,7 +10,7 @@ class data_in(object):
     dia = int()
     c_kor = float()
     c_minus = float()
-    c_3=float()
+    c_3=float(0)
     fi = float()
     s_prin = float()
     dav = str('vn')
@@ -92,38 +92,38 @@ class CalcClass(object):
         else:
             return f'Сталь {name} не найдена'
 
+
     def get_E(self, name, temp):
         """ 
         Get E from steel and temp
         name - steel
         temp - temperature Celsius deegre
         """
-        if name in self.data_fiz.E_list.keys():
-            for t in self.data_fiz.E_list[name]:
-                if temp == t['temp']:
-                    E = t['E']
-                    break
-                elif temp > t['temp']:
-                    temp_l = t['temp']
-                    E_b = t['E'] 
-                    continue
-                else:
-                    temp_b = t['temp']
-                    E_l = t['E']
-                    E = E_b - ((E_b-E_l)*(temp-temp_l)/(temp_b-temp_l))
-                    E = int(round(E, 0))
-                    #sigma_str = str(sigma).split('.')
-                    #if sigma_str[1] > '5':
-                    #    sigma_str[1] = '5'
-                    #    sigma = float('.'.join(sigma_str))
-                    #elif sigma_str[1] < '5':
-                    #    sigma_str[1] = '0'
-                    #    sigma = float('.'.join(sigma_str))
-                
-                    break
-            return E
-        else:
-            return f'Сталь {name} не найдена'
+        import re
+        f = re.findall(r'(.*)(?:\()', name, re.S)
+        if f != []:
+            name = f[0]
+
+        for a in self.data_fiz.class_list.keys():
+            if name in self.data_fiz.class_list[a]:
+                for t in self.data_fiz.E_list[a]:
+                    if temp == t['temp']:
+                        E = t['E']
+                        break
+                    elif temp > t['temp']:
+                        temp_l = t['temp']
+                        E_b = t['E'] 
+                        continue
+                    else:
+                        temp_b = t['temp']
+                        E_l = t['E']
+                        E = E_b - ((E_b-E_l)*(temp-temp_l)/(temp_b-temp_l))
+                        E = int(round(E, 0))
+                        break
+                return E
+                break
+            #else:
+            #    return f'Сталь {name} не найдена'
 
 
 

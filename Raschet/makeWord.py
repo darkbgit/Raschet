@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import CalcClass
 import docx
 import decimal

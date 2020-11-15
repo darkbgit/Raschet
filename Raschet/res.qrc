@@ -304,7 +304,27 @@
     <file>E:/Internet/elementary-icon-pack/Normal/web camera.ico</file>
   </qresource>
   <qresource prefix="newPrefix1">
+    <file>pic/ObCil.gif</file>
     <file>ГОСТ 34233.2-2017_1.png</file>
     <file>ГОСТ 34233.2-2017_2.png</file>
+  </qresource>
+  <qresource prefix="Nozzle">
+    <file>pic/Nozzle/Nozzle1.gif</file>
+    <file>pic/Nozzle/Nozzle2.gif</file>
+    <file>pic/Nozzle/Nozzle3.gif</file>
+    <file>pic/Nozzle/Nozzle4.gif</file>
+    <file>pic/Nozzle/Nozzle5.gif</file>
+    <file>pic/Nozzle/Nozzle6.gif</file>
+    <file>pic/Nozzle/Nozzle7.gif</file>
+    <file>pic/Nozzle/Nozzle8.gif</file>
+  </qresource>
+  <qresource prefix="PC">
+    <file>pic/PC/PC1.gif</file>
+    <file>pic/PC/PC2.gif</file>
+    <file>pic/PC/PC3.gif</file>
+    <file>pic/PC/PC4.gif</file>
+    <file>pic/PC/PC5.gif</file>
+    <file>pic/PC/PC6.gif</file>
+    <file>pic/PC/PC7.gif</file>
   </qresource>
 </RCC>

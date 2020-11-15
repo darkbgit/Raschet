@@ -6,32 +6,39 @@ import CalcClass
 import docx
 import lxml
 import makeWord
-from PyQt5 import QtWidgets, uic, QtCore
+from PyQt5 import QtWidgets, uic, QtCore, QtGui, Qt
 import sys
+from FormOb import FormOb
+from FormEl import FormEl
+from globalvar import data_word, word_lv
 
-data_word = []
-word_lv = QtCore.QStringListModel()
+
+
+##global data_word
+#data_word = []
+#global word_lv
+#word_lv = QtCore.QStringListModel()
 
 class MyWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
-        QtWidgets.QMainWindow.__init__(self, parent)
+        #QtWidgets.QMainWindow.__init__(parent)
+        super().__init__(parent)
         uic.loadUi('MainForm.ui', self)
         
+        self.obWin = None
+        self.obEl = None
         
-        steelList = QtCore.QStringListModel()
-        steelList.insertRows(0, len(data_fiz.sigma_list.keys()))
-        i = 0
-        for k in data_fiz.sigma_list.keys():
-            steelList.setData(steelList.index(i), k)
-            i = i + 1
-        del i
-        self.steel_cbob.setModel(steelList)
-        self.steel_cbel.setModel(steelList)
-        self.steel_cbobyk.setModel(steelList)
+              
+        self.steel_cbob.setModel(data_fiz.steelList)
+        self.steel_cbel.setModel(data_fiz.steelList)
+        self.steel_cbobyk.setModel(data_fiz.steelList)
         
         
         self.pbPredob.clicked.connect(self.pred_calcob)
         self.pbPredel.clicked.connect(self.pred_calcel)
+
+        self.pb_ob.clicked.connect(self.ob_show)
+        self.pb_el.clicked.connect(self.el_show)
         
 
         self.pbCalcob.clicked.connect(self.calcob)
@@ -49,11 +56,22 @@ class MyWindow(QtWidgets.QMainWindow):
         self.vn_rbobyk.toggled.connect(self.vnnarobyk)
         self.vn_rbel.toggled.connect(self.vnnarel)
 
+        self.obykrb_1.toggled.connect(self.ykobrb)
+        self.obykrb_2.toggled.connect(self.ykobrb)
+        self.obykrb_3.toggled.connect(self.ykobrb)
+        self.obykrb_4.toggled.connect(self.ykobrb)
+        self.obykrb_5.toggled.connect(self.ykobrb)
+        self.obykrb_6.toggled.connect(self.ykobrb)
+        self.obykrb_7.toggled.connect(self.ykobrb)
+        self.obykrb_8.toggled.connect(self.ykobrb)
+
+        #self.verticalLayout.clicked.connect(self.ykobrb)
+
 
         #self.lvCalc.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.lvCalc.customContextMenuRequested.connect(self.context_lv)
 
-        self.pbShowSxemaob.clicked.connect(self.ShowCalcSxemaOb)
+        
         self.pbShowSxemael.clicked.connect(self.ShowCalcSxemaEl)
 
         self.action_about.triggered.connect(self.ShowAbout)
@@ -99,6 +117,11 @@ class MyWindow(QtWidgets.QMainWindow):
             self.l_leobyk.setEnabled(True)
             self.pbGetlobyk.setEnabled(True)
 
+    def ykobrb(self, sender):
+        s = self.sender().text() 
+        if self.sender().isChecked():
+            self.yk_leob.setPixmap(QtGui.QPixmap('pic/Nozzle/Nozzle' + s[0]))
+                
     def vnnarel(self):
         if self.vn_rbel.isChecked() == True:
             self.E_leel.setEnabled(False)
@@ -121,11 +144,7 @@ class MyWindow(QtWidgets.QMainWindow):
         windowfi.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
         windowfi.show()
 
-    def ShowCalcSxemaOb(self):
-        global windowcalc
-        windowcalc = ObCalcSxema()
-        windowcalc.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
-        windowcalc.show()
+    
 
     def ShowCalcSxemaEl(self):
         global windowcalcel
@@ -138,6 +157,20 @@ class MyWindow(QtWidgets.QMainWindow):
         windowabout = About()
         windowabout.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
         windowabout.show()
+
+    def ob_show(self):
+        if not self.obWin:
+            self.obWin = FormOb(self)
+        self.obWin.setWindowModality(QtCore.Qt.WindowModal)
+        self.obWin.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+        self.obWin.show()
+
+    def el_show(self):
+        if not self.obEl:
+            self.obEl = FormEl(self)
+        self.obEl.setWindowModality(QtCore.Qt.WindowModal)
+        self.obEl.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+        self.obEl.show()
 
 
 
@@ -306,11 +339,7 @@ class MyWindow(QtWidgets.QMainWindow):
             dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', data_inerr)
             result = dialog.exec()
 
-    #def pred_calcel(self):
-    #    if self.vn_rbel.isChecked() == True:
-    #        self.pred_calcev()
-    #    else:
-    #        self.pred_calcen()
+    
 
     def pred_calcel(self):
         data_in = CalcClass.data_in() 
@@ -783,17 +812,12 @@ class MyWindow(QtWidgets.QMainWindow):
         self.pbMakeWord.setEnabled(True)
 
 
-class ObCalcSxema(QtWidgets.QWidget):
-    def __init__(self, parent=None):
-        QtWidgets.QWidget.__init__(self, parent)
-        uic.loadUi('obvn.ui', self)
+
 
 class ElCalcSxema(QtWidgets.QWidget):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         uic.loadUi('elsxema.ui', self)
-    
-
 
 class Fi(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -888,99 +912,6 @@ class About(QtWidgets.QWidget):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         uic.loadUi('About.ui', self)
-
-
-        
-
-
-
-        #st = QtCore.QStringListModel()
-        #st.insertRow(0)
-
-        #st.setData(st.index(0), data_in.temp)
-        #self.lvCalc.setModel(st)
-
-    #return super().__init__(parent=parent, flags=flags)
-
-
-
-
-   
-
-def main():
-    cc = CalcClass.CalcClass()
-    #st = input('Steel:')
-    #temp = int(input('Temp:'))
-    #dop1 = input('Dop1:')
-    #dop2 = input('Dop2:')
-    data_in = CalcClass.data_in()
-    data_in.name = '000-000000-Н-0000.00.00'
-    data_in.steel = 'Ст3'
-    data_in.press = 0.8
-    data_in.temp = 200
-    data_in.sigma_d = cc.get_sigma(data_in.steel, data_in.temp)
-    data_in.E = cc.get_E('Carbon', data_in.temp)
-    data_in.dia = 1200
-    data_in.c_kor = 2.0
-    data_in.c_minus = 0.8
-    data_in.fi = 1.0
-    data_in.s_prin = 11.0
-    data_in.dav = 'nar'
-    data_in.c_kor = 2.0
-    data_in.l = 1000
-
-    data_out = CalcClass.data_out()
-         
-    data_out = cc.calc_ob(data_in)
-
-    makeWord.makeWord_obnar(data_in, data_out, 'temp.docx')
-
-
-   #formula = lxml.etree._Element.makeelement(_tag='{http://schemas.openxmlformats.org/officeDocument/2006/math}oMathPara', attrib= )
-   # formula = lxml.etree._Element('<m:oMathPara><m:oMath><m:sSub><m:sSubPr><m:ctrlPr><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/><w:i/></w:rPr></m:ctrlPr></m:sSubPr><m:e><m:r><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/></w:rPr><m:t>s</m:t></m:r></m:e><m:sub><m:r><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/></w:rPr><m:t>p</m:t></m:r></m:sub></m:sSub><m:r><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/></w:rPr><m:t>=</m:t></m:r><m:f><m:fPr><m:ctrlPr><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/><w:i/></w:rPr></m:ctrlPr></m:fPr><m:num><m:r><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/></w:rPr><m:t>pD</m:t></m:r></m:num><m:den><m:r><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/></w:rPr><m:t>p-d</m:t></m:r></m:den></m:f></m:oMath></m:oMathPara>')
-   # formyla = '<m:oMathPara><m:oMath><m:sSub><m:sSubPr><m:ctrlPr><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/><w:i/></w:rPr></m:ctrlPr></m:sSubPr><m:e><m:r><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/></w:rPr><m:t>s</m:t></m:r></m:e><m:sub><m:r><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/></w:rPr><m:t>p</m:t></m:r></m:sub></m:sSub><m:r><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/></w:rPr><m:t>=</m:t></m:r><m:f><m:fPr><m:ctrlPr><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/><w:i/></w:rPr></m:ctrlPr></m:fPr><m:num><m:r><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/></w:rPr><m:t>pD</m:t></m:r></m:num><m:den><m:r><w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/></w:rPr><m:t>p-d</m:t></m:r></m:den></m:f></m:oMath></m:oMathPara>'
-   # doc.add_paragraph()._element.append(formula)
-    
-    
-    #paragraph_format = paragraph.paragraph_format
-
-    #paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    #paragraph_format.alignment
-    #d = docx.Document("f.docx")
-
-    #new_doc = docx.Document()
-    #new_para = new_doc.add_paragraph()
-    #new_para_elem = new_para._element
-
-    #para_with_formula = d.paragraphs[0]
-
-    ## Это уже объект типа CT_P, родителем которого является lxml.Element
-    #elem = para_with_formula._element
-    ## Пространство имен `m` xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"
-    #tmp_ns = {"m": "http://schemas.openxmlformats.org/officeDocument/2006/math"}
-
-    #math_tag_with_namespace = "{" + tmp_ns["m"] + "}oMathPara"
-
-    #for p in d.paragraphs:
-    #    print(p.text())
-
-    #for i in elem.getiterator():
-        
-       
-    #    if i.tag == math_tag_with_namespace:
-    #        print(i.nsmap)
-    #        for b in i.tag:
-    #            print(i.tag)
-    #        print(i.tag)
-    #        print("OH! A formula!")
-    #        new_para_elem.append(i)
-    #        #doc.add_paragraph()._element.append(i)
-
-    #new_doc.save("NEW_DOC.docx")
-
-    #doc.add_paragraph()._element.append
-    #doc.save('2.docx')
-
 
 
 
