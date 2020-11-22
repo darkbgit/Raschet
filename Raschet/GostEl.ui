@@ -85,7 +85,10 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QComboBox" name="comboBox">
+    <widget class="QComboBox" name="typegostel_cb">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
      <item>
       <property name="text">
        <string>hн = 0,25 Dн ГОСТ 6533-78</string>

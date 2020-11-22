@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5 import QtWidgets, uic, QtCore, QtGui, Qt
+import copy
 import CalcClass
 import data_fiz
+import globalvar
 from globalvar import data_word, word_lv
 from Fi import Fi
+from Nozzle import Nozzle
+
+
 
 
 class FormOb(QtWidgets.QWidget):
@@ -16,6 +21,8 @@ class FormOb(QtWidgets.QWidget):
 
         self.fiWin = None
         self.calcSxema = None
+        self.nozzleWin = None
+        self.typeElement = 'ob'
         
 
         self.steel_cbob.setModel(data_fiz.steelList)
@@ -39,10 +46,13 @@ class FormOb(QtWidgets.QWidget):
         self.pbCancelob.clicked.connect(self.hide)
 
         self.pbPredob.clicked.connect(self.pred_calcob)
+        
 
         self.pbCalcob.clicked.connect(self.calcob)
 
 
+
+        self.pbObToNozzle.clicked.connect(self.ShowNozzle)
         self.pbShowSxemaob.clicked.connect(self.ShowCalcSxemaOb)
 
     def getSigma(self):
@@ -87,10 +97,29 @@ class FormOb(QtWidgets.QWidget):
         self.fiWin.setWindowModality(QtCore.Qt.WindowModal)
         self.fiWin.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
         self.fiWin.show()
-        #global windowfi
-        #windowfi = Fi()
-        #windowfi.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
-        #windowfi.show()
+
+    def ShowNozzle(self):
+        if not self.nozzleWin:
+            self.nozzleWin = Nozzle(self)
+        self.nozzleWin.setWindowModality(QtCore.Qt.WindowModal)
+        self.nozzleWin.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+        self.nozzleWin.show()
+
+        self.nozzleWin.elem_le.setText(self.name_leob.text())
+        self.nozzleWin.temp_le.setText(self.temp_leob.text())
+        self.nozzleWin.press_le.setText(self.press_leob.text())
+        if self.vn_rbob.isChecked():
+            self.nozzleWin.vn_rbyk.setChecked(True)
+        else:
+            self.nozzleWin.nar_rbyk.setChecked(True)
+
+        #globalvar.elementdatayk[0].yk = True
+
+        self.nozzleWin.data = copy.deepcopy(globalvar.elementdatayk)
+
+
+
+        
 
     def ShowCalcSxemaOb(self):
         global windowcalc
@@ -116,35 +145,39 @@ class FormOb(QtWidgets.QWidget):
 
         data_in.steel = self.steel_cbob.currentText()
 
+        if data_inerr == '':
+            self.sigma_leob.setReadOnly = False
+            self.sigma_leob.setText(str(cc.get_sigma(data_in.steel, data_in.temp)))
+            self.sigma_leob.setReadOnly = True
+            try:
+                data_in.sigma_d = float(self.sigma_leob.text())
+            except:
+                data_inerr = data_inerr + '[σ] неверные данные\n'
 
-        if self.vn_rbob.isChecked():
-            data_in.dav = 'vn'
-        else:
-            data_in.dav = 'nar'
-            if data_inerr == '':
+            if self.vn_rbob.isChecked():
+                data_in.dav = 'vn'
+            else:
+                data_in.dav = 'nar'
+                
                 self.E_leob.setReadOnly = False
                 self.E_leob.setText(str(cc.get_E(data_in.steel, data_in.temp)))
-                data_in.E = float(self.E_leob.text())
                 self.E_leob.setReadOnly = True
-            else:
-                data_inerr = data_inerr + 'E неверные данные\n'
-
-            try:
-                if float(self.l_leob.text()) > 0:
-                    data_in.l = float(self.l_leob.text())
-                else:
-                    data_inerr = data_inerr + 'l неверные данные\n'
-            except:
-                data_inerr = data_inerr + 'l неверные данные\n'
-
                 
-        try:
-            if int(self.temp_leob.text()) in range (20, 1000):
-                data_in.temp = int(self.temp_leob.text())
-            else:
-                data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
-        except:
-            data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
+                try:
+                    data_in.E = float(self.E_leob.text())
+                except:
+                    data_inerr = data_inerr + 'E неверные данные\n'
+        
+
+                try:
+                    if float(self.l_leob.text()) > 0:
+                        data_in.l = float(self.l_leob.text())
+                    else:
+                        data_inerr = data_inerr + 'l неверные данные\n'
+                except:
+                    data_inerr = data_inerr + 'l неверные данные\n'
+
+               
         try:
             if float(self.press_leob.text()) > 0 and float(self.press_leob.text()) < 1000:
                 data_in.press = float(self.press_leob.text())
@@ -198,13 +231,11 @@ class FormOb(QtWidgets.QWidget):
             data_inerr = data_inerr + 'c3 неверные данные\n'
         
         if data_inerr == '':
-            self.sigma_leob.setReadOnly = False
-            self.sigma_leob.setText(str(cc.get_sigma(data_in.steel, data_in.temp)))
-            data_in.sigma_d = float(self.sigma_leob.text())
-            self.sigma_leob.setReadOnly = True
+            
             data_out = cc.calc_ob(data_in)
             self.c_leob.setText(str(round(data_out.c, 2)))
             self.s_calc_lob.setText(f'sp={data_out.s_calc:.3f} мм')
+            self.pbCalcob.setEnabled(True)
         else:
             dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', data_inerr)
             result = dialog.exec()
@@ -316,6 +347,7 @@ class FormOb(QtWidgets.QWidget):
             if float(self.s_leob.text()) >= data_out.s_calc:
                 data_in.s_prin = float(self.s_leob.text())
                 data_out = cc.calc_ob(data_in)
+                globalvar.elementdatayk = [data_in, data_out]
                 data_word.append([data_in, data_out])
                 i = word_lv.rowCount()
                 word_lv.insertRow(i)
@@ -324,6 +356,12 @@ class FormOb(QtWidgets.QWidget):
 
                 self.s_calc_lob.setText(f'sp={data_out.s_calc:.3f} мм')
                 self.press_d_lob.setText(f'[p]={data_out.press_d:.3f} МПа')
+                self.pbObToNozzle.setEnabled(True)
+                if (data_in.dia < 200 and (data_in.s_prin - data_out.c)/data_in.dia <= 0.1) or (data_in.dia >= 200 and (data_in.s_prin - data_out.c)/data_in.dia <= 0.3):
+                    data_out.ypf = True
+                else:
+                    data_out.ypf = False
+                    self.ypf_l.setText('Условия применения формул не выполняется')
             else:
                 dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', 's должно быть больше или равно sp')
                 result = dialog.exec()

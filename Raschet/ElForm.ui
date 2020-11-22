@@ -11,13 +11,16 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Расчет на прочность эллиптического днища</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="9" column="1">
     <widget class="QLineEdit" name="H_leel">
      <property name="enabled">
       <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>200</string>
      </property>
     </widget>
    </item>
@@ -82,6 +85,9 @@
      <property name="inputMask">
       <string/>
      </property>
+     <property name="text">
+      <string>1.6</string>
+     </property>
     </widget>
    </item>
    <item row="12" column="1">
@@ -89,12 +95,18 @@
      <property name="tabletTracking">
       <bool>true</bool>
      </property>
+     <property name="text">
+      <string>0.8</string>
+     </property>
     </widget>
    </item>
    <item row="13" column="1">
     <widget class="QLineEdit" name="c3_leel">
      <property name="tabletTracking">
       <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>1.5</string>
      </property>
     </widget>
    </item>
@@ -157,6 +169,9 @@
      <property name="inputMask">
       <string/>
      </property>
+     <property name="text">
+      <string>800</string>
+     </property>
     </widget>
    </item>
    <item row="15" column="0" colspan="4">
@@ -177,7 +192,11 @@
     </widget>
    </item>
    <item row="16" column="1">
-    <widget class="QLineEdit" name="s_leel"/>
+    <widget class="QLineEdit" name="s_leel">
+     <property name="text">
+      <string>10</string>
+     </property>
+    </widget>
    </item>
    <item row="14" column="2">
     <widget class="QLabel" name="label_11">
@@ -300,12 +319,15 @@
     </widget>
    </item>
    <item row="7" column="1">
-    <widget class="QLineEdit" name="fi_leel">
+    <widget class="QLineEdit" name="fi_le">
      <property name="tabletTracking">
       <bool>true</bool>
      </property>
      <property name="inputMask">
       <string/>
+     </property>
+     <property name="text">
+      <string>1</string>
      </property>
     </widget>
    </item>
@@ -378,7 +400,7 @@
       <string/>
      </property>
      <property name="text">
-      <string/>
+      <string>100</string>
      </property>
     </widget>
    </item>
@@ -472,7 +494,10 @@
  расчет</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pbeltoelyk">
+     <widget class="QPushButton" name="pbElToNozzle">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>340</x>
@@ -487,6 +512,9 @@
       </property>
      </widget>
      <widget class="QPushButton" name="pbCalcel">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>140</x>
@@ -518,7 +546,7 @@
        <string>Cancel</string>
       </property>
      </widget>
-     <widget class="QLabel" name="s_calc_lob">
+     <widget class="QLabel" name="s_calc_lel">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -531,12 +559,12 @@
        <string>s</string>
       </property>
      </widget>
-     <widget class="QLabel" name="press_d_lob">
+     <widget class="QLabel" name="press_d_lel">
       <property name="geometry">
        <rect>
-        <x>100</x>
+        <x>110</x>
         <y>60</y>
-        <width>61</width>
+        <width>81</width>
         <height>20</height>
        </rect>
       </property>
@@ -544,30 +572,17 @@
        <string>p</string>
       </property>
      </widget>
-     <widget class="QLabel" name="s_calc_lob_2">
+     <widget class="QLabel" name="ypf_l">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>200</x>
         <y>60</y>
-        <width>61</width>
-        <height>20</height>
+        <width>271</width>
+        <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>s</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="press_d_lob_2">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>60</y>
-        <width>61</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>p</string>
+       <string/>
       </property>
      </widget>
     </widget>
@@ -698,7 +713,7 @@
          <string/>
         </property>
         <property name="text">
-         <string/>
+         <string>0.8</string>
         </property>
        </widget>
       </item>
@@ -769,7 +784,7 @@
     </widget>
    </item>
    <item row="8" column="3">
-    <widget class="QPushButton" name="pbDimGostel">
+    <widget class="QPushButton" name="pbDimGostEl">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -804,7 +819,11 @@
     </widget>
    </item>
    <item row="10" column="1">
-    <widget class="QLineEdit" name="h1_leel"/>
+    <widget class="QLineEdit" name="h1_leel">
+     <property name="text">
+      <string>25</string>
+     </property>
+    </widget>
    </item>
    <item row="10" column="2">
     <widget class="QLabel" name="label_18">
@@ -823,7 +842,7 @@
   <tabstop>steel_cbel</tabstop>
   <tabstop>sigma_leel</tabstop>
   <tabstop>E_leel</tabstop>
-  <tabstop>fi_leel</tabstop>
+  <tabstop>fi_le</tabstop>
   <tabstop>dia_leel</tabstop>
   <tabstop>H_leel</tabstop>
   <tabstop>h1_leel</tabstop>
@@ -835,11 +854,11 @@
   <tabstop>pbPredel</tabstop>
   <tabstop>pbCalcel</tabstop>
   <tabstop>pbCancelel</tabstop>
-  <tabstop>pbeltoelyk</tabstop>
+  <tabstop>pbElToNozzle</tabstop>
   <tabstop>pbGetSigmael</tabstop>
   <tabstop>pbShowSxemael</tabstop>
   <tabstop>pbGetEel</tabstop>
-  <tabstop>pbDimGostel</tabstop>
+  <tabstop>pbDimGostEl</tabstop>
   <tabstop>checkBox</tabstop>
   <tabstop>pushButton</tabstop>
   <tabstop>pushButton_3</tabstop>
@@ -848,6 +867,8 @@
   <tabstop>nar_rbel</tabstop>
   <tabstop>pbfiel</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>

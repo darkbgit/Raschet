@@ -116,6 +116,6 @@ class Fi(QtWidgets.QWidget):
         if self.table.currentItem().isSelected():
             self.parent().fi_le.setText(self.table.currentItem().text())
         self.close()
-            #print(self.table.item(self.table.currentRow(), self.table.currentColumn()).text())
+           
 
     
