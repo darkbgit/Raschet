@@ -79,7 +79,7 @@
    <item row="7" column="1">
     <widget class="QLineEdit" name="dia_le">
      <property name="text">
-      <string>157</string>
+      <string>800</string>
      </property>
     </widget>
    </item>
@@ -233,7 +233,7 @@
          </size>
         </property>
         <property name="text">
-         <string>8</string>
+         <string>0</string>
         </property>
        </widget>
       </item>
@@ -262,7 +262,7 @@
          </size>
         </property>
         <property name="text">
-         <string>50</string>
+         <string>0</string>
         </property>
        </widget>
       </item>
@@ -535,7 +535,7 @@
       <string/>
      </property>
      <property name="text">
-      <string>180</string>
+      <string>1606</string>
      </property>
     </widget>
    </item>
@@ -551,7 +551,7 @@
       <string/>
      </property>
      <property name="text">
-      <string>1.6</string>
+      <string>1</string>
      </property>
     </widget>
    </item>
@@ -585,7 +585,7 @@
     </widget>
    </item>
    <item row="5" column="3">
-    <widget class="QPushButton" name="pbGetSigmaobyk_2">
+    <widget class="QPushButton" name="pbGetSigma">
      <property name="maximumSize">
       <size>
        <width>50</width>
@@ -624,14 +624,14 @@
    <item row="8" column="1">
     <widget class="QLineEdit" name="s1_le">
      <property name="text">
-      <string>3.5</string>
+      <string>8</string>
      </property>
     </widget>
    </item>
    <item row="9" column="1">
     <widget class="QLineEdit" name="cs_le">
      <property name="text">
-      <string>2</string>
+      <string>2.2</string>
      </property>
     </widget>
    </item>
@@ -695,6 +695,9 @@
           <width>76</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="text">
+         <string>0.05</string>
         </property>
        </widget>
       </item>
@@ -877,7 +880,7 @@
             </size>
            </property>
            <property name="text">
-            <string>10</string>
+            <string>0</string>
            </property>
           </widget>
          </item>
@@ -918,7 +921,7 @@
             </size>
            </property>
            <property name="text">
-            <string>10</string>
+            <string>0</string>
            </property>
           </widget>
          </item>
@@ -945,7 +948,7 @@
             </size>
            </property>
            <property name="text">
-            <string>10</string>
+            <string>0</string>
            </property>
           </widget>
          </item>
