@@ -85,25 +85,24 @@ class MyWindow(QtWidgets.QMainWindow):
    
 
     def makeWord(self):
-        f = self.file_le.text() + '.docx'
         self.pbMakeWord.setEnabled(False)
         for i in range(0, word_lv.rowCount()):
             if data_word[i][0].met == 'obvn' and data_word[i][0].yk == False:
-                makeWord.makeWord_obvn(data_word[i][0], data_word[i][1], f)
+                makeWord.makeWord_obvn(data_word[i][0], data_word[i][1], '1.docx')
             elif data_word[i][0].met == 'obnar' and data_word[i][0].yk == False:
-                makeWord.makeWord_obnar(data_word[i][0], data_word[i][1], f)
+                makeWord.makeWord_obnar(data_word[i][0], data_word[i][1], '1.docx')
             elif data_word[i][0].met == 'elvn' and data_word[i][0].yk == False:
-                makeWord.makeWord_elvn(data_word[i][0], data_word[i][1], f)
+                makeWord.makeWord_elvn(data_word[i][0], data_word[i][1], '1.docx')
             elif data_word[i][0].met == 'elnar' and data_word[i][0].yk == False:
-                makeWord.makeWord_elnar(data_word[i][0], data_word[i][1], f)
+                makeWord.makeWord_elnar(data_word[i][0], data_word[i][1], '1.docx')
             elif data_word[i][0].met == 'konvn' and data_word[i][0].yk == False:
                 pass
             elif data_word[i][0].met == 'konnar' and data_word[i][0].yk == False:
                 pass
             elif data_word[i][0].met == 'obvn' and data_word[i][0].yk == True:
-                makeWord.makeWord_obvnyk(data_word[i][0], data_word[i][1], data_word[i][2], data_word[i][3], f)
+                makeWord.makeWord_obvnyk(data_word[i][0], data_word[i][1], data_word[i][2], data_word[i][3], '1.docx')
             elif data_word[i][0].met == 'obnar' and data_word[i][0].yk == True:
-                makeWord.makeWord_obvnyk(data_word[i][0], data_word[i][1], data_word[i][2], data_word[i][3], f)
+                pass
                 #makeWord.makeWord_obnaryk(data_word[i][0], data_word[i][1], '1.docx')
             elif data_word[i][0].met == 'elvn' and data_word[i][0].yk == True:
                 pass
@@ -116,11 +115,9 @@ class MyWindow(QtWidgets.QMainWindow):
             elif data_word[i][0].met == 'konnar' and data_word[i][0].yk == True:
                 pass
             elif data_word[i][0].met == 'saddle':
-                makeWord.makeWord_obsaddle(data_word[i][0], data_word[i][1], f)
+                makeWord.makeWord_obsaddle(data_word[i][0], data_word[i][1], '1.docx')
 
         self.pbMakeWord.setEnabled(True)
-        dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Information, 'Ok', 'Complite')
-        result = dialog.exec()
 
 
 

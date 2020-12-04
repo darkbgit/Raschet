@@ -30,8 +30,6 @@ class Nozzle(QtWidgets.QWidget):
         self.pbCancel.clicked.connect(self.hide)
         self.pbPredCalc.clicked.connect(self.pred_calc)
         self.pbCalc.clicked.connect(self.calc)
-
-        self.pbGetSigma.clicked.connect(self.getSigma)
         
 
         if self.parent().typeElement == 'ob':
@@ -120,9 +118,6 @@ class Nozzle(QtWidgets.QWidget):
 
         
         self.placerb_1.toggled[bool].emit(False)
-
-    def getSigma(self):
-        self.sigma1_le.setReadOnly(False)
 
     def place(self):
         if self.parent().typeElement == 'ob':
@@ -348,10 +343,9 @@ class Nozzle(QtWidgets.QWidget):
         data_nozzlein.steel1 = self.steel1_cb.currentText()
 
         if data_inerr == '':
-            if self.sigma1_le.isReadOnly == True:
-                self.sigma1_le.setReadOnly = False
-                self.sigma1_le.setText(str(cc.get_sigma(data_nozzlein.steel1, data_in.temp)))
-                self.sigma1_le.setReadOnly = True
+            self.sigma1_le.setReadOnly = False
+            self.sigma1_le.setText(str(cc.get_sigma(data_nozzlein.steel1, data_in.temp)))
+            self.sigma1_le.setReadOnly = True
             try:
                 data_nozzlein.sigma_d1 = float(self.sigma1_le.text())
             except:

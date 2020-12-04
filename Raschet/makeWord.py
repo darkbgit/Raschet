@@ -3,18 +3,12 @@
 import CalcClass
 import docx
 import decimal
-import os
 
 
 def makeWord_obvn(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum=None):
-    if os.path.isfile(docum):
-        doc = docx.Document(docum)
-    else:
-        doc = docx.Document('temp.docx')
+    doc = docx.Document(docum)
     doc.add_heading(f'Расчет на прочность обечайки {data_in.name}, нагруженной внутренним избыточным давлением').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    doc.add_picture('pic/ObCil.gif')
-
     doc.add_paragraph('Исходные данные').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     table = doc.add_table(rows=0, cols=0)
     table.add_column(7000000)
@@ -113,7 +107,6 @@ def makeWord_obnar(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum
     doc = docx.Document(docum)
     doc.add_heading(f'Расчет на прочность обечайки {data_in.name}, нагруженной наружным давлением').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    doc.add_picture('pic/ObCil.gif')
     doc.add_paragraph('Исходные данные').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     table = doc.add_table(rows=0, cols=0)
     table.add_column(7000000)
@@ -194,7 +187,7 @@ def makeWord_obnar(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum
     doc.add_paragraph().add_run(f'B=max(1;{data_out.b_2:.2f})={data_out.b:.2f}').font.math = True
     doc.add_paragraph('c - сумма прибавок к расчетной толщине')
     doc.add_paragraph().add_run('c=c_1+c_2+c_3').font.math = True
-    doc.add_paragraph().add_run(f'c={data_in.c_kor}+{data_in.c_minus}+{data_in.c_3}={data_out.c:.2f} мм').font.math = True
+    doc.add_paragraph().add_run(f'c={data_in.c_kor}+{data_in.c_minus}+{data_in.c3}={data_out.c:.2f} мм').font.math = True
     
     doc.add_paragraph().add_run(f'1.06∙(10^-2∙{data_in.dia})/({data_out.b:.2f})∙({data_in.press}/(10^-5∙{data_in.E})∙{data_out.l}/{data_in.dia})^0.4={data_out.s_calcr1:.2f}').font.math = True
     doc.add_paragraph().add_run(f'(1.2∙{data_in.press}∙{data_in.dia})/(2∙{data_in.sigma_d}-{data_in.press})={data_out.s_calcr2:.2f}').font.math = True
@@ -799,13 +792,7 @@ def makeWord_obvnyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data
         p.add_run(f's_pn=s_p={data_out.s_calcr:.2f} мм').font.math = True 
         p.add_run(' - в случае внутреннего давления')
     else:
-        doc.add_paragraph().add_run('s_pn=(p_pn∙D_p)/(2∙K_1∙[σ]-p_pn)').font.math = True
-        doc.add_paragraph().add_run('p_pn=p/√(1-(p/[p]_E)^2)').font.math = True
-        p = doc.add_paragraph('')
-        p.add_run('[p]_E').font.math = True
-        p.add_run(' -  допускаемое наружное давление из условия устойчивости в пределах упругости, определяемое по ГОСТ 34233.2 для обечайки без отверстий')
-        doc.add_paragraph().add_run(f'p_pn={data_in.press}/√(1-({data_in.press}/{data_nozzleout.pen:.2f})^2)={data_nozzleout.ppn:.2f} МПа').font.math = True
-        doc.add_paragraph().add_run('s_pn=({data_nozzleout.ppn:.2f}∙{data_nozzleout.Dp:.2f})/(2∙{data_nozzleout.K1}∙{data_in.sigma_d}-{data_nozzleout.ppn:.2f})={data_nozzleout.spn:.2f} мм').font.math = True
+        pass
 
     doc.add_paragraph().add_run(f'2∙((s-c)/s_pn-0.8)∙√(D_p∙(s-c))=2∙(({data_in.s_prin}-{data_out.c:.2f})/{data_nozzleout.spn:.2f}-0.8)∙√({data_nozzleout.Dp}∙({data_in.s_prin}-{data_out.c:.2f}))={data_nozzleout.d01:.2f}').font.math = True
     doc.add_paragraph().add_run(f'd_max+2∙c_s={data_nozzleout.dmax:.2f}+2∙{data_nozzlein.cs}={data_nozzleout.d02:.2f}').font.math = True
