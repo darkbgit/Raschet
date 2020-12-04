@@ -3,20 +3,20 @@
  <class>FiForm</class>
  <widget class="QWidget" name="FiForm">
   <property name="windowModality">
-   <enum>Qt::WindowModal</enum>
+   <enum>Qt::ApplicationModal</enum>
   </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>591</width>
+    <height>456</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QComboBox" name="comboBox">
+  <widget class="QComboBox" name="matirial_cb">
    <property name="geometry">
     <rect>
      <x>110</x>
@@ -51,19 +51,34 @@
     <rect>
      <x>0</x>
      <y>50</y>
-     <width>400</width>
+     <width>500</width>
      <height>250</height>
     </rect>
    </property>
    <property name="sizeAdjustPolicy">
-    <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    <enum>QAbstractScrollArea::AdjustToContents</enum>
+   </property>
+   <property name="editTriggers">
+    <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
    </property>
    <property name="selectionMode">
     <enum>QAbstractItemView::SingleSelection</enum>
    </property>
    <property name="selectionBehavior">
-    <enum>QAbstractItemView::SelectRows</enum>
+    <enum>QAbstractItemView::SelectItems</enum>
    </property>
+   <property name="textElideMode">
+    <enum>Qt::ElideNone</enum>
+   </property>
+   <property name="rowCount">
+    <number>8</number>
+   </property>
+   <property name="columnCount">
+    <number>3</number>
+   </property>
+   <attribute name="horizontalHeaderDefaultSectionSize">
+    <number>200</number>
+   </attribute>
    <row>
     <property name="text">
      <string/>
@@ -74,19 +89,29 @@
      <string/>
     </property>
    </row>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
    <column>
     <property name="text">
-     <string>Вид сварного шва или паяного соединения и способ сварки</string>
+     <string>Коэффициент прочности \n сварного или паяного шва</string>
     </property>
    </column>
    <column>
     <property name="text">
-     <string>Коэффициент прочности сварного или паяного шва</string>
+     <string>Коэффициент прочности \n сварного или паяного шва</string>
     </property>
    </column>
+   <column/>
    <item row="0" column="0">
     <property name="text">
      <string>Стыковой</string>
+    </property>
+    <property name="flags">
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
     </property>
    </item>
    <item row="0" column="1">
@@ -94,9 +119,38 @@
      <string>0.92</string>
     </property>
     <property name="flags">
-     <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+     <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
     </property>
    </item>
+   <item row="1" column="0">
+    <property name="text">
+     <string>стыковой
+т</string>
+    </property>
+   </item>
+   <item row="1" column="1">
+    <property name="text">
+     <string>ghbdtn khgfdsj kdsgfs kjsgkd sgkj aoisufa asfhasjk</string>
+    </property>
+   </item>
+   <item row="1" column="2">
+    <property name="text">
+     <string>0.9</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QPushButton" name="pbCancel">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>420</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
   </widget>
  </widget>
  <resources/>
