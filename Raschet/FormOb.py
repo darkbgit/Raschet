@@ -38,7 +38,7 @@ class FormOb(QtWidgets.QWidget):
         self.vn_rbob.toggled.connect(self.vnnarob)
         self.nagobcalc_rb.toggled.connect(self.nagob)
 
-        self.pbGetSigma.clicked.connect(self.getSigma)
+        self.pbGetSigmaob.clicked.connect(self.getSigma)
         self.pbGetEob.clicked.connect(self.getE)
 
         self.pbfiob.clicked.connect(self.ShowFi)
@@ -50,15 +50,13 @@ class FormOb(QtWidgets.QWidget):
 
         self.pbCalcob.clicked.connect(self.calcob)
 
-        
-
 
 
         self.pbObToNozzle.clicked.connect(self.ShowNozzle)
         self.pbShowSxemaob.clicked.connect(self.ShowCalcSxemaOb)
 
     def getSigma(self):
-        self.sigma_leob.setReadOnly(False)
+        pass
         #cc = CalcClass.CalcClass()
         #self.sigma_leob.setText(str(cc.get_sigma(self.steel_cbob.currentText(), int(self.temp_leob.text()))))
         #del cc
@@ -148,11 +146,9 @@ class FormOb(QtWidgets.QWidget):
         data_in.steel = self.steel_cbob.currentText()
 
         if data_inerr == '':
-            if self.sigma_leob.isReadOnly() == True:
-                self.sigma_leob.setReadOnly(False)
-                self.sigma_leob.setText(str(cc.get_sigma(data_in.steel, data_in.temp)))
-                self.sigma_leob.setReadOnly(True)
-            
+            self.sigma_leob.setReadOnly = False
+            self.sigma_leob.setText(str(cc.get_sigma(data_in.steel, data_in.temp)))
+            self.sigma_leob.setReadOnly = True
             try:
                 data_in.sigma_d = float(self.sigma_leob.text())
             except:

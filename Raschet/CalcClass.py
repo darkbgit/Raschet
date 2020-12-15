@@ -79,7 +79,6 @@ class data_nozzlein(object):
     vid = int()
     dav = str()
     met = str()
-    ny = float(2.4)
 
 class data_nozzleout(object):
     press_d = float()
@@ -115,8 +114,6 @@ class data_nozzleout(object):
     V2 = float()
     yslyk1 = float()
     yslyk2 = float()
-    B1n = float()
-    pen = float()
 
 class data_saddlein(object):
     G = int()
@@ -493,9 +490,7 @@ class CalcClass(object):
             if data_in.met == 'obvn':
                 do_out.spn = data_out.s_calcr
             else:
-                do_out.B1n = min(1, 9.45*(data_in.dia/data_out.l)*math.sqrt(data_in.dia/(100*(data_in.s_prin-data_out.c))))
-                do_out.pen = 2.08*0.00001*data_in.E/(data_nozzlein.ny*do_out.B1n)*(data_in.dia/data_out.l)*math.pow(100*(data_in.s_prin-data_out.c)/data_in.dia,2.5)
-                do_out.ppn = data_in.press/math.sqrt(1-math.pow(data_in.press/do_out.pen, 2))
+                do_out.ppn = data_in.press/math.sqrt(1-math.pow(data_in.press/data_out.press_de, 2))
                 do_out.spn = do_out.ppn*do_out.Dp/(2*do_out.K1*data_in.sigma_d-do_out.ppn)
             
 
@@ -626,9 +621,6 @@ class CalcClass(object):
             do_out.sigmai3_2 = do_out.K1_32*do_out.K2*d_sin.sigma_d
             do_out.sigmai3 = min(do_out.sigmai3_1, do_out.sigmai3_2)
 
-            do_out.F_d2 = 0.7*do_out.sigmai2*(d_sin.s-d_sin.c)*math.sqrt(d_sin.D*(d_sin.s-d_sin.c))/(do_out.K10*do_out.K12)
-            do_out.F_d3 = 0.9*do_out.sigmai3*(d_sin.s-d_sin.c)*math.sqrt(d_sin.D*(d_sin.s-d_sin.c))/(do_out.K14*do_out.K16*do_out.K17)
-
             do_out.Fe = do_out.F1*(math.pi/4)*do_out.K13*do_out.K15*math.sqrt(d_sin.D/(d_sin.s-d_sin.c))
 
             if d_sin.dav == 'vn':
@@ -674,9 +666,6 @@ class CalcClass(object):
             do_out.sigmai3_1 = do_out.K1_31*do_out.K2*d_sin.sigma_d
             do_out.sigmai3_2 = do_out.K1_32*do_out.K2*d_sin.sigma_d
             do_out.sigmai3 = min(do_out.sigmai3_1, do_out.sigmai3_2)
-
-            do_out.F_d2 = 0.7*do_out.sigmai2*do_out.sef*math.sqrt(d_sin.D*do_out.sef)/(do_out.K10*do_out.K12)
-            do_out.F_d3 = 0.9*do_out.sigmai3*do_out.sef*math.sqrt(d_sin.D*do_out.sef)/(do_out.K14*do_out.K16*do_out.K17)
 
             do_out.Fe = do_out.F1*(math.pi/4)*do_out.K13*do_out.K15*math.sqrt(d_sin.D/(d_sin.s-d_sin.c))
 
