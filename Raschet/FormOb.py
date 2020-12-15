@@ -108,6 +108,9 @@ class FormOb(QtWidgets.QWidget):
         self.nozzleWin.elem_le.setText(self.name_leob.text())
         self.nozzleWin.temp_le.setText(self.temp_leob.text())
         self.nozzleWin.press_le.setText(self.press_leob.text())
+        self.nozzleWin.steel1_cb.setCurrentText(self.steel_cbob.currentText())
+        self.nozzleWin.steel2_cb.setCurrentText(self.steel_cbob.currentText())
+        self.nozzleWin.steel3_cb.setCurrentText(self.steel_cbob.currentText())
         if self.vn_rbob.isChecked():
             self.nozzleWin.vn_rbyk.setChecked(True)
         else:
