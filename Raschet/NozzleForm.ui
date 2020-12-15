@@ -79,7 +79,7 @@
    <item row="7" column="1">
     <widget class="QLineEdit" name="dia_le">
      <property name="text">
-      <string>800</string>
+      <string>398</string>
      </property>
     </widget>
    </item>
@@ -233,7 +233,7 @@
          </size>
         </property>
         <property name="text">
-         <string>0</string>
+         <string>16</string>
         </property>
        </widget>
       </item>
@@ -262,7 +262,7 @@
          </size>
         </property>
         <property name="text">
-         <string>0</string>
+         <string>125</string>
         </property>
        </widget>
       </item>
@@ -535,7 +535,7 @@
       <string/>
      </property>
      <property name="text">
-      <string>1606</string>
+      <string>143</string>
      </property>
     </widget>
    </item>
@@ -551,7 +551,7 @@
       <string/>
      </property>
      <property name="text">
-      <string>1</string>
+      <string>2</string>
      </property>
     </widget>
    </item>
@@ -624,14 +624,14 @@
    <item row="8" column="1">
     <widget class="QLineEdit" name="s1_le">
      <property name="text">
-      <string>8</string>
+      <string>16</string>
      </property>
     </widget>
    </item>
    <item row="9" column="1">
     <widget class="QLineEdit" name="cs_le">
      <property name="text">
-      <string>2.2</string>
+      <string>2.8</string>
      </property>
     </widget>
    </item>
@@ -697,7 +697,7 @@
          </size>
         </property>
         <property name="text">
-         <string>0.05</string>
+         <string>0.5</string>
         </property>
        </widget>
       </item>
@@ -880,7 +880,7 @@
             </size>
            </property>
            <property name="text">
-            <string>0</string>
+            <string>15</string>
            </property>
           </widget>
          </item>
@@ -921,7 +921,7 @@
             </size>
            </property>
            <property name="text">
-            <string>0</string>
+            <string>15</string>
            </property>
           </widget>
          </item>
@@ -948,7 +948,7 @@
             </size>
            </property>
            <property name="text">
-            <string>0</string>
+            <string>15</string>
            </property>
           </widget>
          </item>

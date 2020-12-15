@@ -122,7 +122,10 @@ class Nozzle(QtWidgets.QWidget):
         self.placerb_1.toggled[bool].emit(False)
 
     def getSigma(self):
-        self.sigma1_le.setReadOnly(False)
+        if self.sigma1_le.isReadOnly:
+            self.sigma1_le.setReadOnly(False)
+        else:
+            self.sigma1_le.setReadOnly(True)
 
     def place(self):
         if self.parent().typeElement == 'ob':
@@ -348,7 +351,7 @@ class Nozzle(QtWidgets.QWidget):
         data_nozzlein.steel1 = self.steel1_cb.currentText()
 
         if data_inerr == '':
-            if self.sigma1_le.isReadOnly == True:
+            if self.sigma1_le.isReadOnly:
                 self.sigma1_le.setReadOnly = False
                 self.sigma1_le.setText(str(cc.get_sigma(data_nozzlein.steel1, data_in.temp)))
                 self.sigma1_le.setReadOnly = True
@@ -508,6 +511,9 @@ class Nozzle(QtWidgets.QWidget):
 
         data_nozzlein.vid = self.vid_group.checkedId()
         data_nozzlein.place = self.placerb_group.checkedId()
+
+        if data_nozzlein.cs + data_nozzlein.cs1 > data_nozzlein.s3 and data_nozzlein.s3 > 0:
+            data_inerr = 'cs+cs1 должно быть меньше s3'
         
         if data_inerr == '':
             

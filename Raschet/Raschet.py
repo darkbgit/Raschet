@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-
+import shutil
+import os
 import json
 import data_fiz
 import CalcClass
@@ -86,6 +87,11 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def makeWord(self):
         f = self.file_le.text() + '.docx'
+        if os.path.isfile(f):
+            pass
+        else:
+            shutil.copy(r'temp.docx', f)
+            
         self.pbMakeWord.setEnabled(False)
         for i in range(0, word_lv.rowCount()):
             if data_word[i][0].met == 'obvn' and data_word[i][0].yk == False:
@@ -101,16 +107,13 @@ class MyWindow(QtWidgets.QMainWindow):
             elif data_word[i][0].met == 'konnar' and data_word[i][0].yk == False:
                 pass
             elif data_word[i][0].met == 'obvn' and data_word[i][0].yk == True:
-                makeWord.makeWord_obvnyk(data_word[i][0], data_word[i][1], data_word[i][2], data_word[i][3], f)
+                makeWord.makeWord_obyk(data_word[i][0], data_word[i][1], data_word[i][2], data_word[i][3], f)
             elif data_word[i][0].met == 'obnar' and data_word[i][0].yk == True:
-                makeWord.makeWord_obvnyk(data_word[i][0], data_word[i][1], data_word[i][2], data_word[i][3], f)
-                #makeWord.makeWord_obnaryk(data_word[i][0], data_word[i][1], '1.docx')
+                makeWord.makeWord_obyk(data_word[i][0], data_word[i][1], data_word[i][2], data_word[i][3], f)
             elif data_word[i][0].met == 'elvn' and data_word[i][0].yk == True:
-                pass
-                #makeWord.makeWord_elvnyk(data_word[i][0], data_word[i][1], '1.docx')
+                makeWord.makeWord_elyk(data_word[i][0], data_word[i][1], data_word[i][2], data_word[i][3], f)
             elif data_word[i][0].met == 'elnar' and data_word[i][0].yk == True:
-                pass
-                #makeWord.makeWord_elnaryk(data_word[i][0], data_word[i][1], '1.docx')
+                makeWord.makeWord_elyk(data_word[i][0], data_word[i][1], data_word[i][2], data_word[i][3], f)
             elif data_word[i][0].met == 'konvn' and data_word[i][0].yk == True:
                 pass
             elif data_word[i][0].met == 'konnar' and data_word[i][0].yk == True:

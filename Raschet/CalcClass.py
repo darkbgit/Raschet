@@ -93,6 +93,7 @@ class data_nozzleout(object):
     d01 = float()
     d02 = float()
     dmax = float()
+    sp = float()
     spn = float()
     ppn = float()
     K1 = int()
@@ -414,45 +415,9 @@ class CalcClass(object):
         import math
         
         do_out = data_nozzleout()
-        if data_nozzlein.vid in [1, 2, 3, 4, 5, 6]:
-            data_nozzlein.s0 = data_in.s_prin
-            data_nozzlein.steel4 = data_nozzlein.steel1
-        
-        
-        do_out.psi1 = min(1, data_nozzlein.sigma_d1/data_in.sigma_d)
-        do_out.psi2 = min(1, data_nozzlein.sigma_d2/data_in.sigma_d)
-        do_out.psi3 = min(1, data_nozzlein.sigma_d3/data_in.sigma_d)
-        if data_nozzlein.vid in [7, 8]:
-            do_out.psi4 = min(1, data_nozzlein.sigma_d4/data_in.sigma_d)
-               
-        do_out.l1p2 = 1.25*math.sqrt((data_nozzlein.dia+2*data_nozzlein.cs)*(data_nozzlein.s1-data_nozzlein.cs))
-        do_out.l1p = min(data_nozzlein.l1, do_out.l1p2)
-        if data_nozzlein.s3 == 0:
-            do_out.l3p = 0
-        else:
-            do_out.l3p2 = 0.5*math.sqrt((data_nozzlein.dia+2*data_nozzlein.cs)*(data_nozzlein.s3-data_nozzlein.cs-data_nozzlein.cs1))
-            do_out.l3p = min(data_nozzlein.l3, do_out.l3p2)
-        
-
+        # расчет Dp, dp
         if data_in.met == 'obvn' or data_in.met == 'obnar':
-            do_out.K1 = 1
             do_out.Dp = data_in.dia
-            do_out.b = math.sqrt(do_out.Dp*(data_in.s_prin-data_out.c)) + math.sqrt(do_out.Dp*(data_in.s_prin-data_out.c))
-            do_out.s1p = data_in.press*(data_nozzlein.dia+2*data_nozzlein.cs)/(2*data_nozzlein.fi*data_nozzlein.sigma_d1-data_in.press)
-            do_out.d0p = 0.4*math.sqrt(do_out.Dp*(data_in.s_prin-data_out.c))
-            do_out.dmax = data_in.dia
-            if data_in.met == 'obvn':
-                do_out.spn = data_out.s_calcr
-            else:
-                do_out.B1n = min(1, 9.45*(data_in.dia/data_out.l)*math.sqrt(data_in.dia/(100*(data_in.s_prin-data_out.c))))
-                do_out.pen = 2.08*0.00001*data_in.E/(data_nozzlein.ny*do_out.B1n)*(data_in.dia/data_out.l)*math.pow(100*(data_in.s_prin-data_out.c)/data_in.dia,2.5)
-                do_out.ppn = data_in.press/math.sqrt(1-math.pow(data_in.press/do_out.pen, 2))
-                do_out.spn = do_out.ppn*do_out.Dp/(2*do_out.K1*data_in.sigma_d-do_out.ppn)
-            
-
-            do_out.d01 = 2*((data_in.s_prin-data_out.c)/do_out.spn - 0.8)*math.sqrt(do_out.Dp*(data_in.s_prin-data_out.c))
-            do_out.d02 = do_out.dmax+2*data_nozzlein.cs
-            do_out.d0 = min(do_out.d01,do_out.d02)
 
             if data_nozzlein.place == 1: #Radial
                 do_out.dp = data_nozzlein.dia + 2 * data_nozzlein.cs
@@ -462,46 +427,130 @@ class CalcClass(object):
                 pass
             elif data_nozzlein.place == 4: #'Tilted'
                 pass
-            
-            do_out.L0 = math.sqrt(do_out.Dp*(data_in.s_prin-data_out.c))
-            do_out.l2p2 = math.sqrt(do_out.Dp*(data_nozzlein.s2 + data_in.s_prin - data_out.c))
-            do_out.l2p = min(data_nozzlein.l2, do_out.l2p2)
-            if data_nozzlein.vid in [1, 2, 3, 4, 5, 6]:
-                do_out.lp = do_out.L0
-            elif data_nozzlein.vid in [7, 8]:
-                do_out.lp = min(data_nozzlein.l, do_out.L0)
-
-            if do_out.dp > do_out.d0:
-                do_out.yslyk1 = do_out.l1p*(data_nozzlein.s1-do_out.s1p-data_nozzlein.cs)*do_out.psi1 + do_out.l2p*data_nozzlein.s2*do_out.psi2 + do_out.l3p*(data_nozzlein.s3-data_nozzlein.cs-data_nozzlein.cs1)*do_out.psi3+do_out.lp*(data_in.s_prin-data_out.s_calcr-data_out.c)*do_out.psi4
-                do_out.yslyk2 = 0.5*(do_out.dp-do_out.d0p)*data_out.s_calcr
-            do_out.V1 = (data_nozzlein.s0-data_out.c)/(data_in.s_prin-data_out.c)
-            do_out.V2 = (do_out.psi4 + (do_out.l1p*(data_nozzlein.s1-data_nozzlein.cs)*do_out.psi1 + do_out.l2p*data_nozzlein.s2*do_out.psi2 + do_out.l3p*(data_nozzlein.s3-data_nozzlein.cs-data_nozzlein.cs1)*do_out.psi3)/do_out.lp*(data_in.s_prin-data_out.c))/(1+0.5*(do_out.dp-do_out.d0p)/do_out.lp + do_out.K1*(data_nozzlein.dia+2*data_nozzlein.cs)/do_out.Dp*(data_nozzlein.fi/data_nozzlein.fi1)*(do_out.l1p/do_out.lp))
-            do_out.V = min(do_out.V1, do_out.V2)
-
-            if data_in.met == 'obvn':
-                
-                do_out.press_d = 2*do_out.K1*data_nozzlein.fi*data_in.sigma_d*(data_in.s_prin-data_out.c)*do_out.V/(do_out.Dp+(data_in.s_prin-data_out.c)*do_out.V)
-            elif data_in.met == 'obnar':
-                do_out.press_dp = 2*do_out.K1*data_nozzlein.fi*data_in.sigma_d*(data_in.s_prin-data_out.c)*do_out.V/(do_out.Dp+(data_in.s_prin-data_out.c)*do_out.V)
-                do_out.press_de = data_out.press_de
-                do_out.press_d = do_out.press_dp/math.sqrt(1+math.pow(do_out.press_dp/do_out.press_de,2))
-            return (do_out)
-
-            
         elif data_in.met == 'konvn' or data_in.met == 'konnar':
             do_out.Dp = data_out.Dk/(math.cos(math.radians(data_in.alfa)))
-
-
         elif data_in.met == 'elvn' or data_in.met == 'elnar':
             if data_in.elH == data_in.dia * 0.25:
                 do_out.Dp = data_in.dia*2*math.sqrt(1 - 3*(math.pow(data_nozzlein.elx/data_in.dia, 2)))
-                
             else:
-                do_out.Dp = math.pow(data_in.dia, 2)/(data_in.elH*2)*math.sqrt(1 - (4*(math.pow(data_in.dia, 2) - 4*math.pow(data_in.elH, 2))*math.pow(data_nozzlein.elx, 2))/math.pow(data_in.dia, 4))
+                do_out.Dp = (data_in.dia ** 2)/(data_in.elH * 2) * math.sqrt(1 - (4 * ((data_in.dia ** 2) - 4 * (data_in.elH ** 2)) * (data_nozzlein.elx ** 2))/(data_in.dia ** 4))
+
+            if data_nozzlein.place == 1: #Radial
+                do_out.dp = data_nozzlein.dia + 2 * data_nozzlein.cs
+            elif data_nozzlein.place == 2: #'Axial'
+                pass
+            elif data_nozzlein.place == 3: #'Offset'
+                pass
+            elif data_nozzlein.place == 4: #'Tilted'
+                pass
+
+
+        do_out.s1p = data_in.press*(data_nozzlein.dia+2*data_nozzlein.cs)/(2*data_nozzlein.fi*data_nozzlein.sigma_d1-data_in.press)
 
         
+        # l1p, l3p, l2p
+        do_out.l1p2 = 1.25*math.sqrt((data_nozzlein.dia+2*data_nozzlein.cs)*(data_nozzlein.s1-data_nozzlein.cs))
+        do_out.l1p = min(data_nozzlein.l1, do_out.l1p2)
+        if data_nozzlein.s3 == 0:
+            do_out.l3p = 0
         else:
-            return 'Dont true'
+            do_out.l3p2 = 0.5*math.sqrt((data_nozzlein.dia+2*data_nozzlein.cs)*(data_nozzlein.s3-data_nozzlein.cs-data_nozzlein.cs1))
+            do_out.l3p = min(data_nozzlein.l3, do_out.l3p2)
+
+        do_out.L0 = math.sqrt(do_out.Dp*(data_in.s_prin-data_out.c))
+
+        if data_nozzlein.vid in [1, 2, 3, 4, 5, 6]:
+            do_out.lp = do_out.L0
+        elif data_nozzlein.vid in [7, 8]:
+            do_out.lp = min(data_nozzlein.l, do_out.L0)
+
+        do_out.l2p2 = math.sqrt(do_out.Dp*(data_nozzlein.s2 + data_in.s_prin - data_out.c))
+        do_out.l2p = min(data_nozzlein.l2, do_out.l2p2)
+
+        
+        if data_nozzlein.vid in [1, 2, 3, 4, 5, 6]:
+            data_nozzlein.s0 = data_in.s_prin
+            data_nozzlein.steel4 = data_nozzlein.steel1
+
+        data_nozzlein.sigma_d2 = self.get_sigma(data_nozzlein.steel2, data_in.temp)
+        data_nozzlein.sigma_d3 = self.get_sigma(data_nozzlein.steel3, data_in.temp)
+        data_nozzlein.sigma_d4 = self.get_sigma(data_nozzlein.steel4, data_in.temp)
+
+        do_out.psi1 = min(1, data_nozzlein.sigma_d1/data_in.sigma_d)
+        do_out.psi2 = min(1, data_nozzlein.sigma_d2/data_in.sigma_d)
+        do_out.psi3 = min(1, data_nozzlein.sigma_d3/data_in.sigma_d)
+        do_out.psi4 = min(1, data_nozzlein.sigma_d4/data_in.sigma_d)
+
+        do_out.d0p = 0.4*math.sqrt(do_out.Dp*(data_in.s_prin-data_out.c))
+
+        do_out.b = math.sqrt(do_out.Dp*(data_in.s_prin-data_out.c)) + math.sqrt(do_out.Dp*(data_in.s_prin-data_out.c))
+        
+        if data_in.met == 'obvn' or data_in.met == 'obnar':
+            do_out.sp = data_out.s_calcr
+                                    
+            do_out.dmax = data_in.dia
+            do_out.K1 = 1
+            if data_in.met == 'obvn':
+                do_out.spn = data_out.s_calcr
+            else:
+                do_out.B1n = min(1, 9.45*(data_in.dia/data_out.l)*math.sqrt(data_in.dia/(100*(data_in.s_prin-data_out.c))))
+                do_out.pen = 2.08*0.00001*data_in.E/(data_nozzlein.ny*do_out.B1n)*(data_in.dia/data_out.l)*math.pow(100*(data_in.s_prin-data_out.c)/data_in.dia,2.5)
+                do_out.ppn = data_in.press/math.sqrt(1-math.pow(data_in.press/do_out.pen, 2))
+                do_out.spn = do_out.ppn*do_out.Dp/(2*do_out.K1*data_in.sigma_d-do_out.ppn)
+            
+
+            
+
+            
+        elif data_in.met == 'konvn' or data_in.met == 'konnar':
+            pass
+
+
+        elif data_in.met == 'elvn' or data_in.met == 'elnar':
+            
+            if data_in.met == 'elvn':
+               do_out.sp = data_in.press*do_out.Dp/(2*data_nozzlein.fi*data_in.sigma_d-data_in.press)
+            elif data_in.met == 'elnar':
+                do_out.sp = data_out.s_calcr
+
+            do_out.dmax = 0.6 * data_in.dia
+            do_out.K1 = 2
+            if data_in.met == 'elvn':
+                do_out.spn = do_out.sp
+            elif data_in.met == 'elnar':
+                do_out.B1n = min(1, 9.45*(data_in.dia/data_out.l)*math.sqrt(data_in.dia/(100*(data_in.s_prin-data_out.c))))
+                do_out.pen = 2.08*0.00001*data_in.E/(data_nozzlein.ny*do_out.B1n)*(data_in.dia/data_out.l)*math.pow(100*(data_in.s_prin-data_out.c)/data_in.dia,2.5)
+                do_out.ppn = data_in.press/math.sqrt(1-math.pow(data_in.press/do_out.pen, 2))
+                do_out.spn = do_out.ppn*do_out.Dp/(2*do_out.K1*data_in.sigma_d-do_out.ppn)
+
+       
+
+        do_out.d01 = 2*((data_in.s_prin-data_out.c)/do_out.spn - 0.8)*math.sqrt(do_out.Dp*(data_in.s_prin-data_out.c))
+        do_out.d02 = do_out.dmax+2*data_nozzlein.cs
+        do_out.d0 = min(do_out.d01,do_out.d02)
+
+        if do_out.dp > do_out.d0:
+            do_out.yslyk1 = do_out.l1p*(data_nozzlein.s1-do_out.s1p-data_nozzlein.cs)*do_out.psi1 + do_out.l2p*data_nozzlein.s2*do_out.psi2 + do_out.l3p*(data_nozzlein.s3-data_nozzlein.cs-data_nozzlein.cs1)*do_out.psi3+do_out.lp*(data_in.s_prin-data_out.s_calcr-data_out.c)*do_out.psi4
+            do_out.yslyk2 = 0.5*(do_out.dp-do_out.d0p)*data_out.s_calcr
+        
+        do_out.V1 = (data_nozzlein.s0-data_out.c)/(data_in.s_prin-data_out.c)
+        do_out.V2 = (do_out.psi4 + (do_out.l1p*(data_nozzlein.s1-data_nozzlein.cs)*do_out.psi1 + do_out.l2p*data_nozzlein.s2*do_out.psi2 + do_out.l3p*(data_nozzlein.s3-data_nozzlein.cs-data_nozzlein.cs1)*do_out.psi3)/do_out.lp*(data_in.s_prin-data_out.c))/(1+0.5*(do_out.dp-do_out.d0p)/do_out.lp + do_out.K1*(data_nozzlein.dia+2*data_nozzlein.cs)/do_out.Dp*(data_nozzlein.fi/data_nozzlein.fi1)*(do_out.l1p/do_out.lp))
+        do_out.V = min(do_out.V1, do_out.V2)
+
+        if data_in.dav == 'vn':
+            do_out.press_d = 2*do_out.K1*data_nozzlein.fi*data_in.sigma_d*(data_in.s_prin-data_out.c)*do_out.V/(do_out.Dp+(data_in.s_prin-data_out.c)*do_out.V)
+        elif data_in.dav == 'nar':
+            do_out.press_dp = 2*do_out.K1*data_nozzlein.fi*data_in.sigma_d*(data_in.s_prin-data_out.c)*do_out.V/(do_out.Dp+(data_in.s_prin-data_out.c)*do_out.V)
+            do_out.press_de = data_out.press_de
+            do_out.press_d = do_out.press_dp/math.sqrt(1+math.pow(do_out.press_dp/do_out.press_de,2))
+        
+            
+        
+
+        return (do_out)
+
+
+        
 
     def calc_saddle(self, d_sin:data_saddlein):
         import math

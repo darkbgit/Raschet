@@ -20,7 +20,7 @@
       <bool>true</bool>
      </property>
      <property name="text">
-      <string>200</string>
+      <string>350</string>
      </property>
     </widget>
    </item>
@@ -106,7 +106,7 @@
       <bool>true</bool>
      </property>
      <property name="text">
-      <string>1.5</string>
+      <string>0.9</string>
      </property>
     </widget>
    </item>
@@ -170,7 +170,7 @@
       <string/>
      </property>
      <property name="text">
-      <string>800</string>
+      <string>1400</string>
      </property>
     </widget>
    </item>
@@ -194,7 +194,7 @@
    <item row="16" column="1">
     <widget class="QLineEdit" name="s_leel">
      <property name="text">
-      <string>10</string>
+      <string>8</string>
      </property>
     </widget>
    </item>
@@ -400,7 +400,7 @@
       <string/>
      </property>
      <property name="text">
-      <string>100</string>
+      <string>40</string>
      </property>
     </widget>
    </item>
@@ -713,7 +713,7 @@
          <string/>
         </property>
         <property name="text">
-         <string>0.8</string>
+         <string>0.5</string>
         </property>
        </widget>
       </item>

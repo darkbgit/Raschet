@@ -500,9 +500,14 @@ def makeWord_elnar(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum
 
     doc.save(docum)
 
-def makeWord_obvnyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_nozzlein:CalcClass.data_nozzlein, data_nozzleout:CalcClass.data_nozzleout, docum=None):
+def makeWord_obyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_nozzlein:CalcClass.data_nozzlein, data_nozzleout:CalcClass.data_nozzleout, docum=None):
     doc = docx.Document(docum)
-    doc.add_heading(f'Расчет на прочность узла врезки штуцера {data_nozzlein.name} в обечайку {data_in.name}, нагруженную внутренним избыточным давлением').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    h = doc.add_heading(f'Расчет на прочность узла врезки штуцера {data_nozzlein.name} в обечайку {data_in.name}, нагруженную ')
+    if data_in.dav == 'vn':
+        h.add_run('внутренним избыточным давлением')
+    else:
+        h.add_run('наружным давлением')
+    h.paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('Исходные данные').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     table = doc.add_table(rows=0, cols=0)
@@ -589,8 +594,12 @@ def makeWord_obvnyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data
         table.cell(9, 0).paragraphs[0].add_run('l_3').font.math = True
         table.cell(9, 1).text =f'{data_nozzlein.l1} мм'
         table.add_row()
-        table.cell(10, 0).text = 'Минимальный размер сварного шва, Δ'
-        table.cell(10, 1).text =f'{data_nozzlein.delta} мм'
+        table.cell(10, 0).text = 'Толщина внутренней части штуцера, '
+        table.cell(10, 0).paragraphs[0].add_run('s_3').font.math = True
+        table.cell(10, 1).text =f'{data_nozzlein.s3} мм'
+        table.add_row()
+        table.cell(11, 0).text = 'Минимальный размер сварного шва, Δ'
+        table.cell(11, 1).text =f'{data_nozzlein.delta} мм'
     elif data_nozzlein.vid == 3:
         table.add_row()
         table.cell(9, 0).text = 'Ширина накладного кольца, '
@@ -617,8 +626,12 @@ def makeWord_obvnyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data
         table.cell(11, 0).paragraphs[0].add_run('l_3').font.math = True
         table.cell(11, 1).text =f'{data_nozzlein.l1} мм'
         table.add_row()
-        table.cell(12, 0).text = 'Минимальный размер сварного шва, Δ'
-        table.cell(12, 1).text =f'{data_nozzlein.delta} мм'
+        table.cell(12, 0).text = 'Толщина внутренней части штуцера, '
+        table.cell(12, 0).paragraphs[0].add_run('s_3').font.math = True
+        table.cell(12, 1).text =f'{data_nozzlein.s3} мм'
+        table.add_row()
+        table.cell(13, 0).text = 'Минимальный размер сварного шва, Δ'
+        table.cell(13, 1).text =f'{data_nozzlein.delta} мм'
     elif data_nozzlein.vid == 5:
         table.add_row()
         table.cell(9, 0).text = 'Ширина накладного кольца, '
@@ -735,7 +748,7 @@ def makeWord_obvnyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data
     doc.add_paragraph().add_run(f'l_1p=min({data_nozzlein.l1};{data_nozzleout.l1p2:.2f})={data_nozzleout.l1p:.2f} мм').font.math = True
 
     if data_nozzlein.l3 > 0:
-        doc.add_paragraph('Расчетная длина внешней части штуцера')
+        doc.add_paragraph('Расчетная длина внутренней части штуцера')
         doc.add_paragraph().add_run('l_3p=min{l_3;0.5√((d+2∙c_s)(s_3-c_s-c_s1))}').font.math = True
         doc.add_paragraph().add_run(f'0.5√((d+2∙c_s)(s_3-c_s-c_s1))=0.5√(({data_nozzlein.dia}+2∙{data_nozzlein.cs})({data_nozzlein.s3}-{data_nozzlein.cs}-{data_nozzlein.cs1}))={data_nozzleout.l3p2:.2f} мм').font.math = True
         doc.add_paragraph().add_run(f'l_3p=min({data_nozzlein.l3};{data_nozzleout.l3p2:.2f})={data_nozzleout.l3p:.2f} мм').font.math = True
@@ -760,16 +773,16 @@ def makeWord_obvnyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data
     doc.add_paragraph('Учет применения различного материального исполнения')
     if data_in.steel != data_nozzlein.steel1:
         p = doc.add_paragraph('- для внешней части штуцера')
-        p.add_run(f'χ_1=min(1;[σ]_1/[σ])=min(1;{data_nozzlein.sigmad1}/{data_in.sigma_d})={data_nozzleout.psi1}')
+        p.add_run(f'χ_1=min(1;[σ]_1/[σ])=min(1;{data_nozzlein.sigma_d1}/{data_in.sigma_d})={data_nozzleout.psi1}')
     if data_in.steel != data_nozzlein.steel2:
         p = doc.add_paragraph('- для накладного кольца')
-        p.add_run(f'χ_2=min(1;[σ]_2/[σ])=min(1;{data_nozzlein.sigmad2}/{data_in.sigma_d})={data_nozzleout.psi2}')
+        p.add_run(f'χ_2=min(1;[σ]_2/[σ])=min(1;{data_nozzlein.sigma_d2}/{data_in.sigma_d})={data_nozzleout.psi2}')
     if data_in.steel != data_nozzlein.steel3:
         p = doc.add_paragraph('- для внутренней части штуцера')
-        p.add_run(f'χ_3=min(1;[σ]_3/[σ])=min(1;{data_nozzlein.sigmad3}/{data_in.sigma_d})={data_nozzleout.psi3}')
+        p.add_run(f'χ_3=min(1;[σ]_3/[σ])=min(1;{data_nozzlein.sigma_d3}/{data_in.sigma_d})={data_nozzleout.psi3}')
     if data_in.steel != data_nozzlein.steel4:
         p = doc.add_paragraph('- для торообразной вставки или вварного кольца')
-        p.add_run(f'χ_4=min(1;[σ]_4/[σ])=min(1;{data_nozzlein.sigmad4}/{data_in.sigma_d})={data_nozzleout.psi4}')
+        p.add_run(f'χ_4=min(1;[σ]_4/[σ])=min(1;{data_nozzlein.sigma_d4}/{data_in.sigma_d})={data_nozzleout.psi4}')
 
     doc.add_paragraph('Расчетный диаметр отверстия, не требующий укрепления в стенке цилиндрической обечайки при отсутствии избыточной толщины стенки сосуда и при наличии штуцера')
     doc.add_paragraph().add_run('d_0p=0,4√(D_p∙(s-c))').font.math = True
@@ -856,7 +869,415 @@ def makeWord_obvnyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data
     doc.add_paragraph().add_run(f'V=min({data_nozzleout.V1:.2f};{data_nozzleout.V2:.2f})={data_nozzleout.V:.2f} мм').font.math = True
 
     doc.add_paragraph().add_run(f'[p]=(2∙{data_nozzleout.K1}∙{data_nozzlein.fi}∙{data_in.sigma_d}∙({data_in.s_prin}-{data_out.c:.2f})∙{data_nozzleout.V:.2f})/({data_nozzleout.Dp}+({data_in.s_prin}-{data_out.c:.2f})∙{data_nozzleout.V:.2f})={data_nozzleout.press_d:.2f} МПа').font.math = True
-    doc.add_paragraph().add_run('[p]≥p')
+    doc.add_paragraph().add_run('[p]≥p').font.math = True
+    doc.add_paragraph().add_run(f'{data_nozzleout.press_d:.2f} МПа >= {data_in.press} МПа').font.math = True
+    if data_nozzleout.press_d >= data_in.press:
+        doc.add_paragraph('Условие прочности выполняется')
+    else:
+        doc.add_paragraph().add_run('Условие прочности не выполняется').font.color.rgb = docx.shared.RGBColor(255,0,0)
+    
+    doc.add_paragraph('Границы применения формул')
+    doc.add_paragraph().add_run('(d_p-2∙c_s)/D≤1').font.math = True
+    doc.add_paragraph().add_run(f'({data_nozzleout.dp:.2f}-2∙{data_nozzlein.cs})/{data_in.dia}={(data_nozzleout.dp-2*data_nozzlein.cs)/data_in.dia:.2f}≤1').font.math = True
+    doc.add_paragraph().add_run('(s-c)/D≤0.1').font.math = True
+    doc.add_paragraph().add_run(f'({data_in.s_prin}-{data_out.c:.2f})/({data_in.dia})={(data_in.s_prin-data_out.c)/data_in.dia:.3f}≤0.1').font.math = True
+
+    doc.save(docum)
+
+def makeWord_elyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_nozzlein:CalcClass.data_nozzlein, data_nozzleout:CalcClass.data_nozzleout, docum=None):
+    doc = docx.Document(docum)
+    h = doc.add_heading(f'Расчет на прочность узла врезки штуцера {data_nozzlein.name} в эллиптическое днище {data_in.name}, нагруженное ')
+    if data_in.dav == 'vn':
+        h.add_run('внутренним избыточным давлением')
+    else:
+        h.add_run('наружным давлением')
+    h.paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    doc.add_paragraph('').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    doc.add_paragraph('Исходные данные').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    table = doc.add_table(rows=0, cols=0)
+    table.add_column(3000000)
+    table.add_column(3000000) #.alignment = docx.enum.table.WD_TABLE_ALIGNMENT.CENTER
+    table.add_row()  
+    table.cell(0, 0).text = 'Элемент:'
+    #table.cell(0, 0).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    table.cell(0, 1).text = f'Штуцер {data_nozzlein.name}'
+    #table.cell(0, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    table.add_row()
+    table.cell(1, 0).text = 'Элемент несущий штуцер:'
+    table.cell(1, 1).text = f'{data_in.name}'
+    table.add_row()
+    table.cell(2, 0).text = 'Тип элемента, несущего штуцер'
+    if data_in.met == 'obvn' or data_in.met == 'obnar':
+        table.cell(2, 1).text ='Обечайка цилиндрическая'
+    elif data_in.met == 'konvn' or data_in.met == 'konnar':
+        table.cell(2, 1).text ='Обечайка коническая'
+    elif data_in.met == 'elvn' or data_in.met == 'elnar':
+        table.cell(2, 1).text ='Днище эллиптическое'
+    table.add_row()
+    table.cell(3, 0).text = 'Тип штуцера'
+    if data_nozzlein.vid == 1:
+        table.cell(3, 1).text ='Непроходящий без укрепления'
+    elif data_nozzlein.vid == 2:
+        table.cell(3, 1).text ='Проходящий без укрепления'
+    elif data_nozzlein.vid == 3:
+        table.cell(3, 1).text ='Непроходящий с накладным кольцом'
+    elif data_nozzlein.vid == 4:
+        table.cell(3, 1).text ='Проходящий с накладным кольцом'
+    elif data_nozzlein.vid == 5:
+        table.cell(3, 1).text ='С накладным кольцом и внутренней частью'
+    elif data_nozzlein.vid == 6:
+        table.cell(3, 1).text ='С отбортовкой'
+    elif data_nozzlein.vid == 7:
+        table.cell(3, 1).text ='С торовой вставкой'
+    elif data_nozzlein.vid == 8:
+        table.cell(3, 1).text ='С вварным кольцом'
+    doc.add_picture(f'pic/Nozzle/Nozzle{data_nozzlein.vid}.gif', width=docx.shared.Inches(3))
+    
+      
+    table = doc.add_table(rows=0, cols=0)
+    table.add_column(5000000)
+    table.add_column(3000000) #.alignment = docx.enum.table.WD_TABLE_ALIGNMENT.CENTER
+    table.add_row()  
+    table.cell(0, 0).text = 'Материал несущего элемента:'
+    table.cell(0, 1).text = f'{data_in.steel}'
+    table.add_row()
+    table.cell(1, 0).text = 'Толщина стенки несущего элемента, s:'
+    table.cell(1, 1).text = f'{data_in.s_prin} мм'
+    table.add_row()
+    table.cell(2, 0).text = 'Сумма прибавок к стенке несущего элемента, c:'
+    table.cell(2, 1).text =f'{data_out.c:.2f} мм'
+    table.add_row()
+    table.cell(3, 0).text = 'Материал штуцера'
+    table.cell(3, 1).text =f'{data_nozzlein.steel1}'
+    table.add_row()
+    table.cell(4, 0).text = 'Внутренний диаметр штуцера, d'
+    table.cell(4, 1).text =f'{data_nozzlein.dia} мм'
+    table.add_row()
+    table.cell(5, 0).text = 'Толщина стенки штуцера, '
+    table.cell(5, 0).paragraphs[0].add_run('s_1').font.math = True
+    table.cell(5, 1).text =f'{data_nozzlein.s1} мм'
+    table.add_row()
+    table.cell(6, 0).text = 'Длина наружной части штуцера, '
+    table.cell(6, 0).paragraphs[0].add_run('l_1').font.math = True
+    table.cell(6, 1).text =f'{data_nozzlein.l1} мм'
+    table.add_row()
+    table.cell(7, 0).text = 'Сумма прибавок к толщине стенки штуцера, '
+    table.cell(7, 0).paragraphs[0].add_run('c_s').font.math = True
+    table.cell(7, 1).text =f'{data_nozzlein.cs}'
+    table.add_row()
+    table.cell(8, 0).text = 'Прибавка на коррозию, '
+    table.cell(8, 0).paragraphs[0].add_run('c_s1').font.math = True
+    table.cell(8, 1).text =f'{data_nozzlein.cs1}'
+    if data_nozzlein.vid == 1:
+        table.add_row()
+        table.cell(9, 0).text = 'Минимальный размер сварного шва, Δ'
+        table.cell(9, 1).text =f'{data_nozzlein.delta} мм'
+    elif data_nozzlein.vid == 2:
+        table.add_row()
+        table.cell(9, 0).text = 'Длина внутренней части штуцера, '
+        table.cell(9, 0).paragraphs[0].add_run('l_3').font.math = True
+        table.cell(9, 1).text =f'{data_nozzlein.l1} мм'
+        table.add_row()
+        table.cell(10, 0).text = 'Толщина внутренней части штуцера, '
+        table.cell(10, 0).paragraphs[0].add_run('s_3').font.math = True
+        table.cell(10, 1).text =f'{data_nozzlein.s3} мм'
+        table.add_row()
+        table.cell(11, 0).text = 'Минимальный размер сварного шва, Δ'
+        table.cell(11, 1).text =f'{data_nozzlein.delta} мм'
+    elif data_nozzlein.vid == 3:
+        table.add_row()
+        table.cell(9, 0).text = 'Ширина накладного кольца, '
+        table.cell(9, 0).paragraphs[0].add_run('l_2').font.math = True
+        table.cell(9, 1).text =f'{data_nozzlein.l2} мм'
+        table.add_row()
+        table.cell(10, 0).text = 'Толщина накладного кольца, '
+        table.cell(10, 0).paragraphs[0].add_run('s_2').font.math = True
+        table.cell(10, 1).text =f'{data_nozzlein.s2} мм'
+        table.add_row()
+        table.cell(11, 0).text = 'Минимальный размер сварного шва, Δ'
+        table.cell(11, 1).text =f'{data_nozzlein.delta} мм'
+    elif data_nozzlein.vid == 4:
+        table.add_row()
+        table.cell(9, 0).text = 'Ширина накладного кольца, '
+        table.cell(9, 0).paragraphs[0].add_run('l_2').font.math = True
+        table.cell(9, 1).text =f'{data_nozzlein.l2} мм'
+        table.add_row()
+        table.cell(10, 0).text = 'Толщина накладного кольца, '
+        table.cell(10, 0).paragraphs[0].add_run('s_2').font.math = True
+        table.cell(10, 1).text =f'{data_nozzlein.s2} мм'
+        table.add_row()
+        table.cell(11, 0).text = 'Длина внутренней части штуцера, '
+        table.cell(11, 0).paragraphs[0].add_run('l_3').font.math = True
+        table.cell(11, 1).text =f'{data_nozzlein.l1} мм'
+        table.add_row()
+        table.cell(12, 0).text = 'Толщина внутренней части штуцера, '
+        table.cell(12, 0).paragraphs[0].add_run('s_3').font.math = True
+        table.cell(12, 1).text =f'{data_nozzlein.s3} мм'
+        table.add_row()
+        table.cell(13, 0).text = 'Минимальный размер сварного шва, Δ'
+        table.cell(13, 1).text =f'{data_nozzlein.delta} мм'
+    elif data_nozzlein.vid == 5:
+        table.add_row()
+        table.cell(9, 0).text = 'Ширина накладного кольца, '
+        table.cell(9, 0).paragraphs[0].add_run('l_2').font.math = True
+        table.cell(9, 1).text =f'{data_nozzlein.l2} мм'
+        table.add_row()
+        table.cell(10, 0).text = 'Толщина накладного кольца, '
+        table.cell(10, 0).paragraphs[0].add_run('s_2').font.math = True
+        table.cell(10, 1).text =f'{data_nozzlein.s2} мм'
+        table.add_row()
+        table.cell(11, 0).text = 'Длина внутренней части штуцера, '
+        table.cell(11, 0).paragraphs[0].add_run('l_3').font.math = True
+        table.cell(11, 1).text =f'{data_nozzlein.l1} мм'
+        table.add_row()
+        table.cell(12, 0).text = 'Толщина внутренней части штуцера, '
+        table.cell(12, 0).paragraphs[0].add_run('s_3').font.math = True
+        table.cell(12, 1).text =f'{data_nozzlein.s3} мм'
+        table.add_row()
+        table.cell(13, 0).text = 'Минимальный размер сварного шва, Δ'
+        table.cell(13, 1).text =f'{data_nozzlein.delta} мм'
+    elif data_nozzlein.vid == 6:
+        table.add_row()
+        table.cell(9, 0).text = 'Радиус отбортовки, r'
+        #table.cell(9, 1).text =f'{data_nozzlein.rotbort} мм'
+        table.add_row()
+        table.cell(10, 0).text = 'Минимальный размер сварного шва, Δ'
+        table.cell(10, 1).text =f'{data_nozzlein.delta} мм'
+    elif data_nozzlein.vid == 7:
+        pass
+    elif data_nozzlein.vid == 8:
+        pass
+
+    doc.add_paragraph('Коэффициенты прочности сварных швов:')
+    p = doc.add_paragraph('Продольный шов штуцера ')
+    p.add_run(f'φ_1={data_nozzlein.fi1}').font.math = True
+    p = doc.add_paragraph('Шов обечайки в зоне врезки штуцера ')
+    p.add_run(f'φ={data_nozzlein.fi}').font.math = True
+
+    doc.add_paragraph('')
+    doc.add_paragraph('Условия нагружения').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    doc.add_paragraph('')
+    table = doc.add_table(rows=0, cols=0)
+    table.add_column(5000000)
+    table.add_column(3000000) #.alignment = docx.enum.table.WD_TABLE_ALIGNMENT.CENTER
+    table.add_row()  
+    table.cell(0, 0).text = 'Расчетная температура, Т:'
+    table.cell(0, 1).text = f'{data_in.temp} °С'
+    table.add_row()
+    if data_in.dav == 'vn':
+        table.cell(1, 0).text = 'Расчетное внутреннее избыточное давление, p:'
+    else:
+        table.cell(1, 0).text = 'Расчетное наружное давление, p:'
+    table.cell(1, 1).text = f'{data_in.press} МПа'
+
+    table.add_row()
+    table.cell(2, 0).text = f'Допускаемое напряжение для материала {data_nozzlein.steel1} при расчетной температуре, '
+    table.cell(2, 0).paragraphs[0].add_run('[σ]_1').font.math = True
+    table.cell(2, 0).paragraphs[0].add_run(':').font.math = True
+    table.cell(2, 1).text =f'{data_nozzlein.sigma_d1} МПа'
+    if data_in.dav == 'nar':
+        table.add_row()
+        table.cell(3, 0).text = 'Модуль продольной упругости при расчетной температуре, '
+        table.cell(3, 0).paragraphs[0].add_run('E_1').font.math = True
+        table.cell(3, 0).paragraphs[0].add_run(':').font.math = True
+        table.cell(3, 1).text =f'{data_nozzlein.E1} МПа'
+    if data_nozzlein.steel1 != data_nozzlein.steel2:
+        table = doc.add_table(rows=0, cols=0)
+        table.add_column(5000000)
+        table.add_column(3000000) #.alignment = docx.enum.table.WD_TABLE_ALIGNMENT.CENTER
+        table.add_row()
+        table.cell(0, 0).text = 'Допускаемое напряжение для материала {data_nozzlein.steel2} при расчетной температуре, '
+        table.cell(0, 0).paragraphs[0].add_run('[σ]_2').font.math = True
+        table.cell(0, 0).paragraphs[0].add_run(':').font.math = True
+        table.cell(0, 1).text =f'{data_nozzlein.sigma_d2} МПа'
+        if data_in.dav == 'nar':
+            table.add_row()
+            table.cell(1, 0).text = 'Модуль продольной упругости при расчетной температуре, '
+            table.cell(1, 0).paragraphs[0].add_run('E_2').font.math = True
+            table.cell(1, 0).paragraphs[0].add_run(':').font.math = True
+            table.cell(1, 1).text =f'{data_nozzlein.E2} МПа'
+    if data_nozzlein.steel1 != data_nozzlein.steel3:
+        table = doc.add_table(rows=0, cols=0)
+        table.add_column(5000000)
+        table.add_column(3000000) #.alignment = docx.enum.table.WD_TABLE_ALIGNMENT.CENTER
+        table.add_row()
+        table.cell(0, 0).text = 'Допускаемое напряжение для материала {data_nozzlein.steel3} при расчетной температуре, '
+        table.cell(0, 0).paragraphs[0].add_run('[σ]_3').font.math = True
+        table.cell(0, 0).paragraphs[0].add_run(':').font.math = True
+        table.cell(0, 1).text =f'{data_nozzlein.sigma_d3} МПа'
+        if data_in.dav == 'nar':
+            table.add_row()
+            table.cell(1, 0).text = 'Модуль продольной упругости при расчетной температуре, '
+            table.cell(1, 0).paragraphs[0].add_run('E_3').font.math = True
+            table.cell(1, 0).paragraphs[0].add_run(':').font.math = True
+            table.cell(1, 1).text =f'{data_nozzlein.E3} МПа'
+    
+    doc.add_paragraph('')
+    doc.add_paragraph('Результаты расчета').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    doc.add_paragraph('')
+        
+    doc.add_paragraph('Расчетные параметры').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    doc.add_paragraph('')
+
+    if data_in.elH == data_in.dia * 0.25:
+        doc.add_paragraph('Расчетный диаметр укрепляемого элемента (для эллиптического днища при H=0.25D)')
+        doc.add_paragraph().add_run('D_p=2∙D∙√(1-3∙(x/D)^2)').font.math = True
+        doc.add_paragraph().add_run(f'D_p=2∙{data_in.dia}∙√(1-3∙({data_nozzlein.elx}/{data_in.dia})^2)={data_nozzleout.Dp} мм').font.math = True
+    else:
+        doc.add_paragraph('Расчетный диаметр укрепляемого элемента (для эллиптического днища)')
+        doc.add_paragraph().add_run('D_p=D^2/(2∙H)∙√(1-(D^2-4∙H^2)/D^4∙x^2)').font.math = True
+        doc.add_paragraph().add_run(f'D_p={data_in.dia}^2/(2∙{data_in.elH})∙√(1-({data_in.dia}^2-4∙{data_in.elH}^2)/{data_in.dia}^4∙{data_nozzlein.elx}^2)={data_nozzleout.Dp} мм').font.math = True
+
+        
+    doc.add_paragraph('Расчетный диаметр отверстия в стенке цилиндрической обечайки при наличии штуцера с круглым поперечным сечением, ось которого совпадает с нормалью к поверхности в центре отверстия')
+    doc.add_paragraph().add_run('d_p=d+2∙c_s').font.math = True
+    doc.add_paragraph().add_run(f'd_p={data_nozzlein.dia}+2∙{data_nozzlein.cs}={data_nozzleout.dp:.2f} мм').font.math = True
+
+    doc.add_paragraph('Расчетная толщина стенки укрепляемого элемента')
+    if data_in.dav == 'vn':
+        doc.add_paragraph('Для эллиптических днищ, работающих под внутренним избыточным давлением, расчетную толщину стенки вычисляют по формуле')
+        doc.add_paragraph().add_run('s_p=(p∙D_p)/(4∙φ∙[σ]-p)').font.math = True
+        doc.add_paragraph().add_run(f's_p={data_in.press}∙{data_nozzleout.Dp}/(4∙{data_nozzlein.fi}∙{data_in.sigma_d}-{data_in.press})={data_nozzleout.sp:.2f} мм').font.math = True
+    else:
+        doc.add_paragraph('Расчетные толщины стенок укрепляемых элементов определяют в соответствии с ГОСТ 34233.2')
+        doc.add_paragraph().add_run(f's_p={data_nozzleout.sp:.2f} мм').font.math = True
+
+    doc.add_paragraph('Расчетная толщина стенки штуцера с круглым поперечным сечением вычисляют по формуле')
+    doc.add_paragraph().add_run('s_1p=(p∙(d+2∙c_s))/(2∙φ_1∙[σ]_1-p)').font.math = True
+    doc.add_paragraph().add_run(f's_1p=({data_in.press}∙({data_nozzlein.dia}+2∙{data_nozzlein.cs}))/(2∙{data_nozzlein.fi1}∙{data_nozzlein.sigma_d1}-{data_in.press}) = {data_nozzleout.s1p:.2f} мм').font.math = True
+
+    doc.add_paragraph('Расчетная длина внешней части штуцера')
+    doc.add_paragraph().add_run('l_1p=min{l_1;1.25√((d+2∙c_s)(s_1-c_s))}').font.math = True
+    doc.add_paragraph().add_run(f'1.25√((d+2∙c_s)(s_1-c_s))=1.25√(({data_nozzlein.dia}+2∙{data_nozzlein.cs})({data_nozzlein.s1}-{data_nozzlein.cs}))={data_nozzleout.l1p2:.2f} мм').font.math = True
+    doc.add_paragraph().add_run(f'l_1p=min({data_nozzlein.l1};{data_nozzleout.l1p2:.2f})={data_nozzleout.l1p:.2f} мм').font.math = True
+
+    if data_nozzlein.l3 > 0:
+        doc.add_paragraph('Расчетная длина внутренней части штуцера')
+        doc.add_paragraph().add_run('l_3p=min{l_3;0.5√((d+2∙c_s)(s_3-c_s-c_s1))}').font.math = True
+        doc.add_paragraph().add_run(f'0.5√((d+2∙c_s)(s_3-c_s-c_s1))=0.5√(({data_nozzlein.dia}+2∙{data_nozzlein.cs})({data_nozzlein.s3}-{data_nozzlein.cs}-{data_nozzlein.cs1}))={data_nozzleout.l3p2:.2f} мм').font.math = True
+        doc.add_paragraph().add_run(f'l_3p=min({data_nozzlein.l3};{data_nozzleout.l3p2:.2f})={data_nozzleout.l3p:.2f} мм').font.math = True
+    
+    doc.add_paragraph('Ширина зоны укрепления отверстия в цилиндрической обечайке')
+    doc.add_paragraph().add_run('L_0=√(D_p∙(s-c))').font.math = True
+    doc.add_paragraph().add_run(f'L_0=√({data_nozzleout.Dp}∙({data_in.s_prin}-{data_out.c:.2f}))={data_nozzleout.L0:.2f}').font.math = True
+
+    doc.add_paragraph('Расчетная ширина зоны укрепления отверстия в стенке циллиндрической обечайки')
+    if data_nozzlein.vid in [1, 2, 3, 4, 5, 6]:
+        doc.add_paragraph().add_run(f'l_p=L_0={data_nozzleout.lp:.2f} мм').font.math = True
+    elif data_nozzlein.vid in [7, 8]:
+        doc.add_paragraph().add_run('l_p=min{l;L_0}').font.math = True
+        doc.add_paragraph().add_run(f'l_p=min({data_nozzlein.l};{data_nozzleout.L0:.2f})={data_nozzleout.lp:.2f} мм').font.math = True
+
+    if data_nozzlein.l2 > 0:
+        doc.add_paragraph('Расчетная ширина накладного кольца')
+        doc.add_paragraph().add_run('l_2p=min{l_2;√(D_p∙(s_2+s-c))}').font.math = True
+        doc.add_paragraph().add_run(f'√(D_p∙(s_2+s-c))=√({data_nozzleout.Dp}∙({data_nozzlein.s2}+{data_in.s_prin}-{data_out.c:.2f}))={data_nozzleout.l2p2:.2f} мм').font.math = True
+        doc.add_paragraph().add_run(f'l_2p=min({data_nozzlein.l2};{data_nozzleout.l2p2:.2f})={data_nozzleout.l2p:.2f} мм').font.math = True
+
+    doc.add_paragraph('Учет применения различного материального исполнения')
+    if data_in.steel != data_nozzlein.steel1:
+        p = doc.add_paragraph('- для внешней части штуцера')
+        p.add_run(f'χ_1=min(1;[σ]_1/[σ])=min(1;{data_nozzlein.sigma_d1}/{data_in.sigma_d})={data_nozzleout.psi1}')
+    if data_in.steel != data_nozzlein.steel2:
+        p = doc.add_paragraph('- для накладного кольца')
+        p.add_run(f'χ_2=min(1;[σ]_2/[σ])=min(1;{data_nozzlein.sigma_d2}/{data_in.sigma_d})={data_nozzleout.psi2}')
+    if data_in.steel != data_nozzlein.steel3:
+        p = doc.add_paragraph('- для внутренней части штуцера')
+        p.add_run(f'χ_3=min(1;[σ]_3/[σ])=min(1;{data_nozzlein.sigma_d3}/{data_in.sigma_d})={data_nozzleout.psi3}')
+    if data_in.steel != data_nozzlein.steel4:
+        p = doc.add_paragraph('- для торообразной вставки или вварного кольца')
+        p.add_run(f'χ_4=min(1;[σ]_4/[σ])=min(1;{data_nozzlein.sigma_d4}/{data_in.sigma_d})={data_nozzleout.psi4}')
+
+    doc.add_paragraph('Расчетный диаметр отверстия, не требующий укрепления в стенке выпуклого днища при отсутствии избыточной толщины стенки сосуда и при наличии штуцера')
+    doc.add_paragraph().add_run('d_0p=0,4√(D_p∙(s-c))').font.math = True
+    doc.add_paragraph().add_run(f'd_0p=0.4√({data_nozzleout.Dp}∙({data_in.s_prin}-{data_out.c:.2f}))={data_nozzleout.d0p:.2f} мм').font.math = True
+
+            
+    doc.add_paragraph('Проверка условия необходимости проведения расчета укрепления отверстий')
+    doc.add_paragraph().add_run('d_p≤d_0').font.math = True
+    
+    p = doc.add_paragraph('')
+    p.add_run('d_0').font.math = True
+    p.add_run(' - наибольший допустимый диаметр одиночного отверстия, не требующего дополнительного укрепления при наличии избыточной толщины стенки сосуда')
+    doc.add_paragraph().add_run('d_0=min{2∙((s-c)/s_pn-0.8)∙√(D_p∙(s-c));d_max+2∙c_s}').font.math = True
+    
+    p = doc.add_paragraph('где ')
+    p.add_run('d_max').font.math = True
+    p.add_run(' - максимальный диаметр отверстия ')
+
+    p = doc.add_paragraph('')
+    p.add_run(f'd_max=0.6∙D={data_nozzleout.dmax} мм').font.math = True 
+    p.add_run(' - для отверстий в выпуклых днищах')
+    
+    
+    
+    if data_in.dav == 'vn':
+        p = doc.add_paragraph('')
+        p.add_run(f's_pn=s_p={data_nozzleout.sp:.2f} мм').font.math = True 
+        p.add_run(' - в случае внутреннего давления')
+
+    else:
+        doc.add_paragraph().add_run('s_pn=(p_pn∙D_p)/(2∙K_1∙[σ]-p_pn)').font.math = True
+        p = doc.add_paragraph('')
+        p.add_run('K_1=2').font.math = True
+        p.adds_run(' - для выпуклых днищ')
+        doc.add_paragraph().add_run('p_pn=p/√(1-(p/[p]_E)^2)').font.math = True
+        p = doc.add_paragraph('')
+        p.add_run('[p]_E').font.math = True
+        p.add_run(' -  допускаемое наружное давление из условия устойчивости в пределах упругости, определяемое по ГОСТ 34233.2 для обечайки без отверстий')
+        doc.add_paragraph().add_run(f'p_pn={data_in.press}/√(1-({data_in.press}/{data_nozzleout.pen:.2f})^2)={data_nozzleout.ppn:.2f} МПа').font.math = True
+        doc.add_paragraph().add_run('s_pn=({data_nozzleout.ppn:.2f}∙{data_nozzleout.Dp:.2f})/(2∙{data_nozzleout.K1}∙{data_in.sigma_d}-{data_nozzleout.ppn:.2f})={data_nozzleout.spn:.2f} мм').font.math = True
+
+    doc.add_paragraph().add_run(f'2∙((s-c)/s_pn-0.8)∙√(D_p∙(s-c))=2∙(({data_in.s_prin}-{data_out.c:.2f})/{data_nozzleout.spn:.2f}-0.8)∙√({data_nozzleout.Dp}∙({data_in.s_prin}-{data_out.c:.2f}))={data_nozzleout.d01:.2f}').font.math = True
+    doc.add_paragraph().add_run(f'd_max+2∙c_s={data_nozzleout.dmax:.2f}+2∙{data_nozzlein.cs}={data_nozzleout.d02:.2f}').font.math = True
+    doc.add_paragraph().add_run(f'd_0=min({data_nozzleout.d01:.2f};{data_nozzleout.d02:.2f})={data_nozzleout.d0:.2f} мм').font.math = True
+    if data_nozzleout.dp <= data_nozzleout.d0:
+        doc.add_paragraph().add_run(f'{data_nozzleout.dp:.2f}≤{data_nozzleout.d0:.2f}').font.math = True
+        doc.add_paragraph('Условие прочности выполняется, следовательно дальнейших расчетов укрепления отверстия не требуется')
+    else:
+        doc.add_paragraph().add_run(f'{data_nozzleout.dp:.2f}≤{data_nozzleout.d0:.2f}').font.math = True
+        doc.add_paragraph('Условие прочности не выполняется, следовательно необходим дальнейший расчет укрепления отверстия')
+        doc.add_paragraph('В случае укрепления отверстия утолщением стенки сосуда или штуцера, или накладным кольцом, или вварным кольцом, или торообразной вставкой, или отбортовкой должно выполняться условие')
+        doc.add_paragraph().add_run('l_1p∙(s_1-s_1p-c_s)∙χ_1+l_2p∙s_2∙χ_2+l_3p∙(s_3-c_s-c_s1)∙χ_3+l1p∙(s-s_p-c)∙χ_4≥0.5∙(d_p-d_0p)∙s_p').font.math = True
+        doc.add_paragraph().add_run('l_1p∙(s_1-s_1p-c_s)∙χ_1+l_2p∙s_2∙χ_2+l_3p∙(s_3-c_s-c_s1)∙χ_3+l1p∙(s-s_p-c)∙χ_4=').font.math = True
+        doc.add_paragraph().add_run(f'{data_nozzleout.l1p:.2f}∙({data_nozzlein.s1}-{data_nozzleout.s1p:.2f}-{data_nozzlein.cs})∙{data_nozzleout.psi1}+{data_nozzleout.l2p:.2f}∙{data_nozzlein.s2}∙{data_nozzleout.psi2}+{data_nozzleout.l3p:.2f}∙({data_nozzlein.s3}-{data_nozzlein.cs}-{data_nozzlein.cs1})∙{data_nozzleout.psi3:.2f}+{data_nozzleout.lp:.2f}∙({data_in.s_prin}-{data_out.s_calcr:.2f}-{data_out.c:.2f})∙{data_nozzleout.psi4}={data_nozzleout.yslyk1:.2f}').font.math = True
+        doc.add_paragraph().add_run(f'0.5∙(d_p-d_0p)∙s_p=0.5∙({data_nozzleout.dp:.2f}-{data_nozzleout.d0p:.2f})∙{data_out.s_calcr:.2f}={data_nozzleout.yslyk2:.2f}').font.math = True
+        doc.add_paragraph().add_run(f'{data_nozzleout.yslyk1:.2f}≥{data_nozzleout.yslyk2:.2f}').font.math = True
+        if data_nozzleout.yslyk1 >= data_nozzleout.yslyk2:
+            doc.add_paragraph('Условие прочности выполняется')
+        else:
+            doc.add_paragraph().add_run('Условие прочности не выполняется').font.color.rgb = docx.shared.RGBColor(255,0,0)
+
+
+    p = doc.add_paragraph('')
+    doc.add_paragraph('Допускаемое внутреннее избыточное давление элемента сосуда с учетом ослабления стенки отверстием вычисляют по формуле')
+    doc.add_paragraph().add_run('[p]=(2∙K_1∙φ∙[σ]∙(s-c)∙V)/(D_p+(s-c)∙V)').font.math = True
+
+    p = doc.add_paragraph('где ')
+    p.add_run('K_1=1').font.math = True
+    p.add_run(' - для цилиндрических и конических обечаек')
+    doc.add_paragraph('Коэффициент снижения прочности сосуда, ослабленного одиночным отверстием, вычисляют по формуле')
+    doc.add_paragraph().add_run('V=min{(s_0-c)/(s-c);(χ_4+(l_1p∙(s_1-c_s)∙χ_1+l_2p∙s_2∙χ_2+l_3p∙(s_3-c_s-c_s1)∙χ_3)/(l_p∙(s-c)))/(1+0.5∙(d_p-d_0p)/l_p+K_1∙(d+2∙c_s)/D_p∙(φ/φ_1)∙(l_1p/l_p))}').font.math = True
+    #doc.add_picture(f'pic/Nozzle/V.png', width=docx.shared.Inches(6))
+    l = doc.paragraphs[-1]
+    l.paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    if data_nozzlein.vid in [1, 2, 6]:
+        p = doc.add_paragraph('При отсутствии накладного кольца и укреплении отверстия штуцером ')
+        p.add_run('s_2=0 , s_0=s , χ_4=1').font.math = True
+    elif data_nozzlein.vid in [3, 4, 5]:
+        p = doc.add_paragraph('При отсутствии вварного кольца или торообразной вставки ')
+        p.add_run('s_0=s , χ_4=1').font.math = True
+    
+
+
+    doc.add_paragraph().add_run(f'(s_0-c)/(s-c)=({data_nozzlein.s0}-{data_out.c:.2f})/({data_in.s_prin}-{data_out.c:.2f})={data_nozzleout.V1:.2f}').font.math = True
+    doc.add_paragraph().add_run('(χ_4+(l_1p∙(s_1-c_s)∙χ_1+l_2p∙s_2∙χ_2+l_3p∙(s_3-c_s-c_s1)∙χ_3)/(l_p∙(s-c)))/(1+0.5∙(d_p-d_0p)/l_p+K_1∙(d+2∙c_s)/D_p∙(φ/φ_1)∙(l_1p/l_p))=').font.math = True
+    doc.add_paragraph().add_run(f'({data_nozzleout.psi4}+({data_nozzleout.l1p:.2f}∙({data_nozzlein.s1}-{data_nozzlein.cs})∙{data_nozzleout.psi1}+{data_nozzleout.l2p:.2f}∙{data_nozzlein.s2}∙{data_nozzleout.psi2}+{data_nozzleout.l3p:.2f}∙({data_nozzlein.s3}-{data_nozzlein.cs}-{data_nozzlein.cs1})∙{data_nozzleout.psi3:.2f})/({data_nozzleout.lp:.2f}∙({data_in.s_prin}-{data_out.c:.2f})))/(1+0.5∙({data_nozzleout.dp:.2f}-{data_nozzleout.d0p:.2f})/{data_nozzleout.lp:.2f}+{data_nozzleout.K1}∙({data_nozzlein.dia}+2∙{data_nozzlein.cs})/{data_nozzleout.Dp}∙({data_nozzlein.fi}/{data_nozzlein.fi1})∙({data_nozzleout.l1p:.2f}/{data_nozzleout.lp:.2f}))={data_nozzleout.V2:.2f}').font.math = True
+
+    doc.add_paragraph().add_run(f'V=min({data_nozzleout.V1:.2f};{data_nozzleout.V2:.2f})={data_nozzleout.V:.2f} мм').font.math = True
+
+    doc.add_paragraph().add_run(f'[p]=(2∙{data_nozzleout.K1}∙{data_nozzlein.fi}∙{data_in.sigma_d}∙({data_in.s_prin}-{data_out.c:.2f})∙{data_nozzleout.V:.2f})/({data_nozzleout.Dp}+({data_in.s_prin}-{data_out.c:.2f})∙{data_nozzleout.V:.2f})={data_nozzleout.press_d:.2f} МПа').font.math = True
+    doc.add_paragraph().add_run('[p]≥p').font.math = True
     doc.add_paragraph().add_run(f'{data_nozzleout.press_d:.2f} МПа >= {data_in.press} МПа').font.math = True
     if data_nozzleout.press_d >= data_in.press:
         doc.add_paragraph('Условие прочности выполняется')

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5 import QtWidgets, uic, QtCore, QtGui, Qt
+import copy
 import CalcClass
 import data_fiz
 from Fi import Fi
@@ -360,13 +361,16 @@ class FormEl(QtWidgets.QWidget):
         self.nozzleWin.elem_le.setText(self.name_leel.text())
         self.nozzleWin.temp_le.setText(self.temp_leel.text())
         self.nozzleWin.press_le.setText(self.press_leel.text())
+        self.nozzleWin.steel1_cb.setCurrentText(self.steel_cbel.currentText())
+        self.nozzleWin.steel2_cb.setCurrentText(self.steel_cbel.currentText())
+        self.nozzleWin.steel3_cb.setCurrentText(self.steel_cbel.currentText())
         if self.vn_rbel.isChecked():
             self.nozzleWin.vn_rbyk.setChecked(True)
         else:
             self.nozzleWin.nar_rbyk.setChecked(True)
 
-        globalvar.elementdatayk[0].yk = True
-        self.nozzleWin.data = globalvar.elementdatayk
+        
+        self.nozzleWin.data = copy.deepcopy(globalvar.elementdatayk)
 
         
 
