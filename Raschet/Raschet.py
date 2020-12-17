@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 import shutil
 import os
 import json
@@ -43,7 +44,14 @@ class MyWindow(QtWidgets.QMainWindow):
         self.action_about.triggered.connect(self.ShowAbout)
         self.action_close.triggered.connect(self.close)
             
+        self.proekt_le.textEdited.connect(self.proektLe)
 
+    def proektLe(self):
+        t = self.proekt_le.text()
+        p = re.compile(r'(?<=Н-)(\d{4})')
+        m = p.search(t)
+        if m:
+            self.file_le.setText(m.group(0))
 
                 
     def ShowAbout(self):
@@ -77,13 +85,27 @@ class MyWindow(QtWidgets.QMainWindow):
     def context_lv(self, point):
         #if lvCalc.
         menu = QtWidgets.QMenu()
-        #menu_ac = QtWidgets.QAction('Vty.', menu)
-        menu.addAction('Верх')
-        menu.addAction('Вниз')
+        menu_up = QtWidgets.QAction('Вверх', menu)
+        menu_up.triggered.connect(self.menuUpLv)
+        menu_down = QtWidgets.QAction('Вниз', menu)
+        menu_del = QtWidgets.QAction('Удалить', menu)
+        menu_delall = QtWidgets.QAction('Удалить все', menu)
+        menu_delall.triggered.connect(self.menuDelAllLv)
+        menu.addAction(menu_up)
+        menu.addAction(menu_down)
         menu.addSeparator()
-        menu.addAction('Удалить')
+        menu.addAction(menu_del)
+        menu.addAction(menu_delall)
         menu.exec(self.lvCalc.mapToGlobal(point))
    
+    def menuUpLv(self):
+        print('Ok')
+
+    def menuDelAllLv(self):
+        word_lv.rowCount()
+        word_lv.removeRows(0, word_lv.rowCount())
+        #word_lv.rowsAboutToBeRemoved(0)
+        self.lvCalc.setModel(word_lv)
 
     def makeWord(self):
         f = self.file_le.text() + '.docx'
@@ -96,6 +118,10 @@ class MyWindow(QtWidgets.QMainWindow):
                 result = dialog.exec()
         else:
             shutil.copy(r'temp.docx', f)
+            if self.proekt_le.text() != '':
+                doc = docx.Document(f)
+                doc.core_properties.subject = self.proekt_le.text() + ' РР'
+                doc.save(f)
             
         self.pbMakeWord.setEnabled(False)
         for i in range(0, word_lv.rowCount()):

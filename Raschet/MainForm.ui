@@ -54,7 +54,7 @@
      <enum>QTabWidget::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="usesScrollButtons">
      <bool>true</bool>
@@ -239,21 +239,7 @@
       <string>Вывод в Word</string>
      </attribute>
      <layout class="QGridLayout" name="gridLayout" columnminimumwidth="0,0,0,500">
-      <item row="2" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Имя файла</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QPushButton" name="pbMakeWord">
-        <property name="text">
-         <string>Оформить расчет</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3" rowspan="4">
+      <item row="0" column="3" rowspan="5">
        <widget class="QFrame" name="frame">
         <property name="minimumSize">
          <size>
@@ -269,10 +255,10 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="3" column="1">
        <widget class="QLineEdit" name="file_le"/>
       </item>
-      <item row="2" column="2">
+      <item row="3" column="2">
        <widget class="QPushButton" name="pbGetFile">
         <property name="maximumSize">
          <size>
@@ -282,6 +268,20 @@
         </property>
         <property name="text">
          <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Имя файла</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QPushButton" name="pbMakeWord">
+        <property name="text">
+         <string>Оформить расчет</string>
         </property>
        </widget>
       </item>
@@ -307,6 +307,16 @@
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Image&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Номер проекта</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="2">
+       <widget class="QLineEdit" name="proekt_le"/>
       </item>
      </layout>
     </widget>
