@@ -79,6 +79,7 @@ class data_nozzlein(object):
     vid = int()
     dav = str()
     met = str()
+    ny = float(2.4)
 
 class data_nozzleout(object):
     press_d = float()
@@ -114,6 +115,8 @@ class data_nozzleout(object):
     V2 = float()
     yslyk1 = float()
     yslyk2 = float()
+    B1n = float()
+    pen = float()
 
 class data_saddlein(object):
     G = int()
@@ -203,6 +206,13 @@ class data_saddleout(object):
     sigmai3_2 = float()
     Fe = float()
     sef = float()
+
+class data_heatin(object):
+    a = float()
+    a1 = float()
+
+class data_heatout(object):
+    mn = float()
 
 
 
@@ -309,9 +319,16 @@ class CalcClass(object):
         import math
         
         do_out = data_out()
+
+        do_out.c = data_in.c_kor + data_in.c_minus + data_in.c_3
+        if ((data_in.dia < 200) and ((data_in.s_prin - do_out.c)/data_in.dia <= 0.3)) or ((data_in.dia >= 200) and ((data_in.s_prin - do_out.c)/data_in.dia <= 0.3)):
+            do_out.ypf = True
+        else:
+            do_out.ypf = False
+
         if data_in.dav == 'vn':
             do_out.s_calcr = data_in.press * data_in.dia / ((2 * data_in.sigma_d * data_in.fi) - data_in.press)
-            do_out.c = data_in.c_kor + data_in.c_minus
+            
             do_out.s_calc = do_out.s_calcr + do_out.c
 
             if data_in.s_prin == 0.0:
@@ -328,7 +345,7 @@ class CalcClass(object):
             do_out.s_calcr1 = 1.06 * (0.01 * data_in.dia / do_out.b) * math.pow((data_in.press/(0.00001*data_in.E))*(do_out.l/data_in.dia), 0.4)
             do_out.s_calcr2 = 1.2*data_in.press*data_in.dia/(2*data_in.sigma_d-data_in.press)
             do_out.s_calcr = max(do_out.s_calcr1, do_out.s_calcr2)
-            do_out.c = data_in.c_kor + data_in.c_minus
+            
             do_out.s_calc = do_out.s_calcr + do_out.c
             if data_in.s_prin == 0.0:
                 do_out.press_dp = 2*data_in.sigma_d*(do_out.s_calc-do_out.c)/(data_in.dia+do_out.s_calc-do_out.c)
@@ -359,11 +376,20 @@ class CalcClass(object):
         import math
         
         do_out = data_out()
+
+
+        do_out.c = data_in.c_kor + data_in.c_minus + data_in.c_3
+        if  (0.002 <= ((data_in.s_prin - data_out.c)/data_in.dia) <= 0.1) and (0.2 <= (data_in.elH/data_in.dia) < 0.5):
+            do_out.ypf = True
+        else:
+            do_out.ypf = False
+                    
+
         do_out.elR = math.pow(data_in.dia, 2)/(4*data_in.elH)
         if data_in.dav == 'vn':
             
             do_out.s_calcr = data_in.press * do_out.elR / ((2 * data_in.sigma_d * data_in.fi) - 0.5 * data_in.press)
-            do_out.c = data_in.c_kor + data_in.c_minus + data_in.c_3
+            
             do_out.s_calc = do_out.s_calcr + do_out.c
 
             if data_in.s_prin == 0.0:
@@ -376,8 +402,7 @@ class CalcClass(object):
         elif data_in.dav == 'nar':
             
             do_out.s_calcr2 = 1.2*data_in.press*do_out.elR/(2*data_in.sigma_d)
-            do_out.c = data_in.c_kor + data_in.c_minus + data_in.c_3
-            
+                        
             do_out.elke = 0.9 # добавить ке для полусферических =1
             do_out.s_calcr1 = (do_out.elke * do_out.elR) / 161 * math.sqrt((data_in.ny * data_in.press) / (0.00001*data_in.E))
             do_out.s_calcr = max(do_out.s_calcr1, do_out.s_calcr2)
@@ -490,7 +515,9 @@ class CalcClass(object):
             if data_in.met == 'obvn':
                 do_out.spn = data_out.s_calcr
             else:
-                do_out.ppn = data_in.press/math.sqrt(1-math.pow(data_in.press/data_out.press_de, 2))
+                do_out.B1n = min(1, 9.45*(data_in.dia/data_out.l)*math.sqrt(data_in.dia/(100*(data_in.s_prin-data_out.c))))
+                do_out.pen = 2.08*0.00001*data_in.E/(data_nozzlein.ny*do_out.B1n)*(data_in.dia/data_out.l)*math.pow(100*(data_in.s_prin-data_out.c)/data_in.dia,2.5)
+                do_out.ppn = data_in.press/math.sqrt(1-math.pow(data_in.press/do_out.pen, 2))
                 do_out.spn = do_out.ppn*do_out.Dp/(2*do_out.K1*data_in.sigma_d-do_out.ppn)
             
 
@@ -544,8 +571,6 @@ class CalcClass(object):
 
         return (do_out)
 
-
-        
 
     def calc_saddle(self, d_sin:data_saddlein):
         import math
@@ -621,6 +646,9 @@ class CalcClass(object):
             do_out.sigmai3_2 = do_out.K1_32*do_out.K2*d_sin.sigma_d
             do_out.sigmai3 = min(do_out.sigmai3_1, do_out.sigmai3_2)
 
+            do_out.F_d2 = 0.7*do_out.sigmai2*(d_sin.s-d_sin.c)*math.sqrt(d_sin.D*(d_sin.s-d_sin.c))/(do_out.K10*do_out.K12)
+            do_out.F_d3 = 0.9*do_out.sigmai3*(d_sin.s-d_sin.c)*math.sqrt(d_sin.D*(d_sin.s-d_sin.c))/(do_out.K14*do_out.K16*do_out.K17)
+
             do_out.Fe = do_out.F1*(math.pi/4)*do_out.K13*do_out.K15*math.sqrt(d_sin.D/(d_sin.s-d_sin.c))
 
             if d_sin.dav == 'vn':
@@ -669,6 +697,9 @@ class CalcClass(object):
 
             do_out.Fe = do_out.F1*(math.pi/4)*do_out.K13*do_out.K15*math.sqrt(d_sin.D/(d_sin.s-d_sin.c))
 
+            do_out.F_d2 = 0.7*do_out.sigmai2*do_out.sef*math.sqrt(d_sin.D*do_out.sef)/(do_out.K10*do_out.K12)
+            do_out.F_d3 = 0.9*do_out.sigmai3*do_out.sef*math.sqrt(d_sin.D*do_out.sef)/(do_out.K14*do_out.K16*do_out.K17)
+
             if d_sin.dav == 'vn':
                 do_out.yslystoich2 = do_out.M1/do_out.M_d+do_out.Fe/do_out.F_d+math.pow(do_out.Q1/do_out.Q_d, 2)
             elif d_sin.dav == 'nar':
@@ -676,6 +707,81 @@ class CalcClass(object):
 
         return do_out
 
+
+    def calc_heat(self, d_in:data_heatin):
+        import math
+        d_out = data_heatout()
+        
+        if d_in.type == 'nepodviz':
+            d_out.mn = d_in.a / d_in.a1
+            d_out.etam = 1 - (d_in.i * (d_in.dT ** 2)) / (4 * (d_in.a1 ** 2))
+            d_out.etaT = 1 - (d_in.i*((d_in.dt - 2 * d_in.sT) ** 2)) / (4 * (d_in.a1 ** 2))
+
+            d_out.Ky = d_in.ET * (d_out.etaT - d_out.etam) / d_in.l
+            d_out.ro = d_out.Ky * d_in.a1 * d_in.l / (d_in.EK * d_in.sK)
+
+            if d_in.komp == 0: # без компенсатора
+                d_out.Kqz, d_out.Kpz = 0
+            elif d_in.komp == 1: # с компенсатором
+                d_out.Kqz = math.pi * d_in.a * d_in.EK * d_in.sK / (d_in.l * d_in.Kkom)
+                d_out.Kpz = math.pi * ((d_in.Dkom ** 2) - (d_in.dkom ** 2)) * d_in.EK * d_in.sK / (4.8 * d_in.l * d_in.a * d_in.Kkom)
+            elif d_in.komp == 2: # с расширителем
+                pass
+            elif d_in.komp == 3: # с компенсатором на расширителе
+                pass
+
+            d_out.Kq = 1 + d_out.Kqz
+            d_out.Kp = 1+ d_out.Kpz
+            
+            d_out.etaTr = int(d_out.etaT * 20) / 20
+            if d_out.etaTr in data_fiz.eta_list:
+                d_out.psi0 = data_fiz.eta_list[d_out.etaTr]
+            else:
+                print('Error psi0')
+
+            if d_in.typep == 0:
+                d_out.beta = (1.82 / d_in.sp) * ((d_out.Ky * d_in.sp)/(d_out.psi0 * d_in.Ep) ** .25)
+            elif d_in.typep == 1:
+                pass
+
+            d_out.omega = d_out.beta * d_in.a1
+
+            d_out.fip = 1 - d_in.d0 / d_in.tp
+            
+            
+            d_out.b1 = (d_in.DH - d_in.D) / 2
+            d_out.R1 = (d_in.DH - d_in.D) / 4
+            d_out.b2 = (d_in.DH - d_in.D) / 2
+            d_out.R2 = (d_in.DH - d_in.D) / 4
+
+            d_out.beta1 = 1.3 / ((d_in.a * d_in.s1) ** .5)
+            d_out.beta2 = 1.3 / ((d_in.a * d_in.s2) ** .5)
+            d_out.K1 = d_out.beta1 * d_in.a * d_in.EK * (d_in.s1 ** 3) / (5.5 * d_out.R1)
+            d_out.K2 = d_out.beta2 * d_in.a * d_in.ED * (d_in.s2 ** 3) / (5.5 * d_out.R2)
+            d_out.Kf1 = d_in.E1 * (d_in.h1 ** 3) * d_out.b1 /(12 * (d_out.R1 ** 2)) + d_out.K1 * (1 + d_out.beta1 * d_in.h1 / 2)
+            d_out.Kf2 = d_in.E2 * (d_in.h2 ** 3) * d_out.b2 /(12 * (d_out.R2 ** 2)) + d_out.K2 * (1 + d_out.beta2 * d_in.h2 / 2)
+            d_out.Kf = d_out.Kf1 + d_out.Kf2
+
+            d_out.mcp = 0.15 * d_in.i * ((d_in.dT - d_in.sT) ** 2) / (d_in.a1 ** 2)
+
+            d_out.p0 = (d_in.alfaK * (d_in.tK - d_in.t0) - d_in.alfaT * (d_in.tT - d_in.t0)) * d_out.Ky * d_in.l + (d_out.etaT - 1 + d_out.mcp + d_out.mn * (d_out.mn + 0.5 * d_out.ro * d_out.Kq)) * d_in.pt - (d_out.etam - 1 + d_out.mcp + d_out.mn * (d_out.mn + 0.3 * d_out.ro * d_out.Kp)) * d_in.pm
+        
+            
+        elif d_in.type == 'plav':
+            
+            
+
+            if True:
+                d_out.dE = d_in.d0 - 2 * d_in.sT
+            else:
+                d_out.dE = d_in.d0 - d_in.sT
+
+            d_out.fiE = 1 - d_out.dE / d_in.tp
+
+
+
+        elif d_in.type == 'U':
+            pass
 
         
         

@@ -94,7 +94,7 @@ class FormEl(QtWidgets.QWidget):
         data_inerr = str('')
 
         try:
-            if int(self.temp_leel.text()) in range (20, 1000):
+            if 20 <= int(self.temp_leel.text()) <= 1000:
                 data_in.temp = int(self.temp_leel.text())
             else:
                 data_inerr = data_inerr + 'T должна быть в диапазоне 20 - 1000\n'
@@ -128,7 +128,7 @@ class FormEl(QtWidgets.QWidget):
 
         
         try:
-            if float(self.press_leel.text()) > 0 and float(self.press_leel.text()) < 1000:
+            if 0 < float(self.press_leel.text()) < 1000:
                 data_in.press = float(self.press_leel.text())
             else:
                 data_inerr = data_inerr + 'p должно быть в диапазоне 0 - 1000\n'
@@ -137,7 +137,7 @@ class FormEl(QtWidgets.QWidget):
 
         
         try:
-            if float(self.fi_le.text()) > 0 and float(self.fi_le.text()) <= 1:
+            if 0 < float(self.fi_le.text()) <= 1:
                 data_in.fi = float(self.fi_le.text())
             else:
                 data_inerr = data_inerr + 'fi должен быть в диапазоне 0 - 1\n'
@@ -480,20 +480,32 @@ class GostEl(QtWidgets.QWidget):
             H = self.listDim[self.diagostel_cb.currentText()][-2][1]
             h1 = self.listDim[self.diagostel_cb.currentText()][-2][0]
         else:
-            ind =  self.listDim[self.diagostel_cb.currentText()].index(int(self.sgostel_cb.currentText()))
+            ind =  self.listDim[self.diagostel_cb.currentText()].index(int(self.sgostel_cb.currentText())) + 1
 
-            if ind >= int(self.listDim[self.diagostel_cb.currentText()][-1].split('-')[-1]):
+            if ind > int(self.listDim[self.diagostel_cb.currentText()][-1].split('-')[-1]):
                 H = self.listDim[self.diagostel_cb.currentText()][-2][1]
                 h1 = self.listDim[self.diagostel_cb.currentText()][-2][0]
-            elif ind < int(self.listDim[self.diagostel_cb.currentText()][-1].split('-')[-1]) and len(self.listDim[self.diagostel_cb.currentText()][-1].split('-')) == 1:
+            elif ind <= int(self.listDim[self.diagostel_cb.currentText()][-1].split('-')[-1]) and len(self.listDim[self.diagostel_cb.currentText()][-1].split('-')) == 1:
                 H = self.listDim[self.diagostel_cb.currentText()][-3][1]
                 h1 = self.listDim[self.diagostel_cb.currentText()][-3][0]
-            elif ind >= int(self.listDim[self.diagostel_cb.currentText()][-1].split('-')[-2]):
+            elif ind > int(self.listDim[self.diagostel_cb.currentText()][-1].split('-')[-2]):
                 H = self.listDim[self.diagostel_cb.currentText()][-3][1]
                 h1 = self.listDim[self.diagostel_cb.currentText()][-3][0]
-            elif ind < int(self.listDim[self.diagostel_cb.currentText()][-1].split('-')[-2]) and len(self.listDim[self.diagostel_cb.currentText()][-1].split('-')) == 2:
+            elif ind <= int(self.listDim[self.diagostel_cb.currentText()][-1].split('-')[-2]) and len(self.listDim[self.diagostel_cb.currentText()][-1].split('-')) == 2:
                 H = self.listDim[self.diagostel_cb.currentText()][-4][1]
                 h1 = self.listDim[self.diagostel_cb.currentText()][-4][0]
+            elif ind > int(self.listDim[self.diagostel_cb.currentText()][-1].split('-')[-3]):
+                H = self.listDim[self.diagostel_cb.currentText()][-4][1]
+                h1 = self.listDim[self.diagostel_cb.currentText()][-4][0]
+            elif ind <= int(self.listDim[self.diagostel_cb.currentText()][-1].split('-')[-3]) and len(self.listDim[self.diagostel_cb.currentText()][-1].split('-')) == 3:
+                H = self.listDim[self.diagostel_cb.currentText()][-5][1]
+                h1 = self.listDim[self.diagostel_cb.currentText()][-5][0]
+            elif ind > int(self.listDim[self.diagostel_cb.currentText()][-1].split('-')[-4]):
+                H = self.listDim[self.diagostel_cb.currentText()][-5][1]
+                h1 = self.listDim[self.diagostel_cb.currentText()][-5][0]
+            elif ind <= int(self.listDim[self.diagostel_cb.currentText()][-1].split('-')[-4]) and len(self.listDim[self.diagostel_cb.currentText()][-1].split('-')) == 4:
+                H = self.listDim[self.diagostel_cb.currentText()][-6][1]
+                h1 = self.listDim[self.diagostel_cb.currentText()][-6][0]
             else:
                 H =''
                 h1 = ''

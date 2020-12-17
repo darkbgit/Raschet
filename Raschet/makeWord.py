@@ -3,67 +3,87 @@
 import CalcClass
 import docx
 import decimal
+import os
 
 
-def makeWord_obvn(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum=None):
+def makeWord_ob(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum=None):
     doc = docx.Document(docum)
-    doc.add_heading(f'Расчет на прочность обечайки {data_in.name}, нагруженной внутренним избыточным давлением').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    h = doc.add_heading(f'Расчет на прочность обечайки {data_in.name}, нагруженной ')
+    if data_in.dav == 'vn':
+        h.add_run('внутренним избыточным давлением')
+    else:
+        h.add_run('наружным давлением')
+    h.paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    doc.add_picture('pic/ObCil.gif')
     doc.add_paragraph('Исходные данные').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    
+           
     table = doc.add_table(rows=0, cols=0)
-    table.add_column(7000000)
-    table.add_column(750000) #.alignment = docx.enum.table.WD_TABLE_ALIGNMENT.CENTER
-    table.add_column(750000)
+    table.add_column(6500000)
+    table.add_column(1000000) #.alignment = docx.enum.table.WD_TABLE_ALIGNMENT.CENTER
+    i = 0
+    table.add_row()
+    table.cell(i, 0).text = 'Материал обечайки'
+    table.cell(i, 1).text =f'{data_in.steel}'
+    i += 1
+    table.add_row()
+    table.cell(i, 0).text = 'Внутренний диаметр обечайки, D:'
+    table.cell(i, 1).text =f'{data_in.dia} мм'
+    i += 1
+    if data_in.dav == 'nar':
+        table.add_row()
+        table.cell(i, 0).text = 'Длина обечайки, l:'
+        table.cell(i, 1).text =f'{data_in.l} мм'
+        i += 1
+    table.add_row()
+    table.cell(i, 0).text = 'Прибавка на коррозию, '
+    table.cell(i, 0).paragraphs[0].add_run('c_1').font.math = True
+    table.cell(i, 0).paragraphs[0].add_run(':')
+    table.cell(i, 1).text =f'{data_in.c_kor} мм'
+    i += 1
+    table.add_row()
+    table.cell(i, 0).text = 'Прибавка для компенсации минусового допуска листа, '
+    table.cell(i, 0).paragraphs[0].add_run('c_2').font.math = True
+    table.cell(i, 0).paragraphs[0].add_run(':')
+    table.cell(i, 1).text =f'{data_in.c_minus} мм'
+    i += 1
+    if data_in.c_3 > 0:
+        table.add_row()
+        table.cell(i, 0).text = 'Технологическая прибавка, '
+        table.cell(i, 0).paragraphs[0].add_run('c_3').font.math = True
+        table.cell(i, 0).paragraphs[0].add_run(':')
+        table.cell(i, 1).text =f'{data_in.c_3}'
+    table.add_row()
+    table.cell(i, 0).text = 'Коэффициент прочности сварного шва, '
+    table.cell(i, 0).paragraphs[0].add_run('φ_p').font.math = True
+    table.cell(i, 1).text =f'{data_in.fi}'
+    del i
+
+    doc.add_paragraph('')
+    doc.add_paragraph('Условия нагружения').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    table = doc.add_table(rows=0, cols=0)
+    table.add_column(5000000)
+    table.add_column(3000000) #.alignment = docx.enum.table.WD_TABLE_ALIGNMENT.CENTER
     table.add_row()  
-    table.cell(0, 0).text = 'Наименование и размерность'
-    table.cell(0, 0).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(0, 1).text = 'Обозначение'
-    table.cell(0, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(0, 2).text = 'Значение'
+    table.cell(0, 0).text = 'Расчетная температура, Т:'
+    table.cell(0, 1).text = f'{data_in.temp} °С'
     table.add_row()
-    table.cell(1, 0).text = 'Расчетная температура, °С'
-    table.cell(1, 1).text = 't'
-    table.cell(1, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(1, 2).text = f'{data_in.temp}'
+    if data_in.dav == 'vn':
+        table.cell(1, 0).text = 'Расчетное внутреннее избыточное давление, p:'
+    else:
+        table.cell(1, 0).text = 'Расчетное наружное давление, p:'
+    table.cell(1, 1).text = f'{data_in.press} МПа'
+
     table.add_row()
-    table.cell(2, 0).text = 'Расчетное внутреннее давление, МПа'
-    table.cell(2, 1).text ='p'
-    table.cell(2, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(2, 2).text =f'{data_in.press}'
-    table.add_row()
-    table.cell(3, 0).text = 'Марка стали'
-    table.cell(3, 1).text =''
-    table.cell(3, 2).text =f'{data_in.steel}'
-    table.add_row()
-    table.cell(4, 0).text = 'Допускаемое напряжение при расчетной температуре, МПа'
-    table.cell(4, 1).text = '[σ]'
-    table.cell(4, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(4, 2).text =f'{data_in.sigma_d}'
-    table.add_row()
-    table.cell(5, 0).text = 'Коэффициент прочности сварного шва'
-    table.cell(5, 1).paragraphs[0].add_run('φ_p').font.math = True
-    #table.cell(5, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(5, 2).text =f'{data_in.fi}'
-    table.add_row()
-    table.cell(6, 0).text = 'Внутренний диаметр обечайки, мм'
-    table.cell(6, 1).text = 'D'
-    table.cell(6, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(6, 2).text =f'{data_in.dia}'
-    table.add_row()
-    table.cell(7, 0).text = 'Прибавка на коррозию, мм'
-    table.cell(7, 1).paragraphs[0].add_run('c_1').font.math = True
-    #table.cell(7, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(7, 2).text =f'{data_in.c_kor}'
-    table.add_row()
-    table.cell(8, 0).text = 'Прибавка для компенсации минусового допуска листа, мм'
-    table.cell(8, 1).paragraphs[0].add_run('c_2').font.math = True
-    #table.cell(8, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(8, 2).text =f'{data_in.c_minus}'
-    table.add_row()
-    table.cell(9, 0).text = 'Технологическая прибавка, мм'
-    table.cell(9, 1).paragraphs[0].add_run('c_3').font.math = True
-    #table.cell(9, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(9, 2).text =f'{data_in.c_3}'
+    table.cell(2, 0).text = f'Допускаемое напряжение для материала {data_in.steel} при расчетной температуре, [σ]:'
+    table.cell(2, 1).text =f'{data_in.sigma_d} МПа'
+    if data_in.dav == 'nar':
+        table.add_row()
+        table.cell(3, 0).text = 'Модуль продольной упругости при расчетной температуре, E:'
+        table.cell(3, 1).text =f'{data_in.E} МПа'
+    
+    
     doc.add_paragraph('')
     doc.add_paragraph('Результаты расчета').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('')
@@ -72,26 +92,63 @@ def makeWord_obvn(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum=
     p = doc.add_paragraph('где ')
     p.add_run('s_p').font.math = True
     p.add_run(' - расчетная толщина стенки обечайки')
-    doc.add_paragraph().add_run('s_p=(p∙D)/(2∙[σ]∙φ_p-p)').font.math = True
+    if data_in.dav == 'vn':
+        doc.add_paragraph().add_run('s_p=(p∙D)/(2∙[σ]∙φ_p-p)').font.math = True
+        doc.add_paragraph().add_run(f's_p=({data_in.press}∙{data_in.dia})/(2∙{data_in.sigma_d}∙{data_in.fi}-{data_in.press})={data_out.s_calcr:.2f} мм').font.math = True
+    elif data_in.dav == 'nar':
+        doc.add_paragraph().add_run('s_p=max{1.06∙(10^-2∙D)/(B)∙(p/(10^-5∙E)∙l/D)^0.4;(1.2∙p∙D)/(2∙[σ]-p)}').font.math = True
+        doc.add_paragraph('Коэффициент B вычисляют по формуле:')
+        doc.add_paragraph().add_run('B=max{1;0.47∙(p/(10^-5∙E))^0.067∙(l/D)^0.4}').font.math = True
+        doc.add_paragraph().add_run(f'0.47∙({data_in.press}/(10^-5∙{data_in.E}))^0.067∙({data_out.l}/{data_in.dia})^0.4={data_out.b_2:.2f}').font.math = True
+        doc.add_paragraph().add_run(f'B=max(1;{data_out.b_2:.2f})={data_out.b:.2f}').font.math = True
+        doc.add_paragraph().add_run(f'1.06∙(10^-2∙{data_in.dia})/({data_out.b:.2f})∙({data_in.press}/(10^-5∙{data_in.E})∙{data_out.l}/{data_in.dia})^0.4={data_out.s_calcr1:.2f}').font.math = True
+        doc.add_paragraph().add_run(f'(1.2∙{data_in.press}∙{data_in.dia})/(2∙{data_in.sigma_d}-{data_in.press})={data_out.s_calcr2:.2f}').font.math = True
+        doc.add_paragraph().add_run(f's_p=max({data_out.s_calcr1:.2f};{data_out.s_calcr2:.2f})={data_out.s_calcr:.2f} мм').font.math = True
+    
     doc.add_paragraph('c - сумма прибавок к расчетной толщине')
     doc.add_paragraph().add_run('c=c_1+c_2+c_3').font.math = True
     doc.add_paragraph().add_run(f'c={data_in.c_kor}+{data_in.c_minus}+{data_in.c_3}={data_out.c:.2f} мм').font.math = True
-    doc.add_paragraph().add_run(f's_p=({data_in.press}∙{data_in.dia})/(2∙{data_in.sigma_d}∙{data_in.fi}-{data_in.press})={data_out.s_calcr:.2f} мм').font.math = True
+    
+        
     doc.add_paragraph().add_run(f's={data_out.s_calcr:.2f}+{data_out.c:.2f}={data_out.s_calc:.2f} мм').font.math = True
     if data_in.s_prin > data_out.s_calc:
-        doc.add_paragraph(f'Принятая толщина s={data_in.s_prin} мм')
+        doc.add_paragraph().add_run(f'Принятая толщина s={data_in.s_prin} мм').bold = True
     else:
         doc.add_paragraph().add_run(f'Принятая толщина s={data_in.s_prin} мм').font.color.rgb = docx.shared.RGBColor(255,0,0)
-    doc.add_paragraph('Допускаемое внутреннее избыточное давление вычисляют по формуле:')
-    doc.add_paragraph().add_run('[p]=(2∙[σ]∙φ_p∙(s-c))/(D+s-c)').font.math = True
-    doc.add_paragraph().add_run(f'[p]=(2∙{data_in.sigma_d}∙{data_in.fi}∙({data_in.s_prin}-{data_out.c:.2f}))/({data_in.dia}+{data_in.s_prin}-{data_out.c:.2f})={data_out.press_d:.2f} МПа').font.math = True
+    
+    if data_in.dav == 'vn':
+        doc.add_paragraph('Допускаемое внутреннее избыточное давление вычисляют по формуле:')
+        doc.add_paragraph().add_run('[p]=(2∙[σ]∙φ_p∙(s-c))/(D+s-c)').font.math = True
+        doc.add_paragraph().add_run(f'[p]=(2∙{data_in.sigma_d}∙{data_in.fi}∙({data_in.s_prin}-{data_out.c:.2f}))/({data_in.dia}+{data_in.s_prin}-{data_out.c:.2f})={data_out.press_d:.2f} МПа').font.math = True
+    elif data_in.dav == 'nar':
+        doc.add_paragraph('Допускаемое наружное давление вычисляют по формуле:')
+        doc.add_paragraph().add_run('[p]=[p]_П/√(1+([p]_П/[p]_E)^2)').font.math = True
+        doc.add_paragraph('допускаемое давление из условия прочности вычисляют по формуле:')
+        doc.add_paragraph().add_run('[p]_П=(2∙[σ]∙(s-c))/(D+s-c)').font.math = True
+        doc.add_paragraph().add_run(f'[p]_П=(2∙{data_in.sigma_d}∙({data_in.s_prin}-{data_out.c:.2f}))/({data_in.dia}+{data_in.s_prin}-{data_out.c:.2f})={data_out.press_dp:.2f} МПа').font.math = True
+        doc.add_paragraph('допускаемое давление из условия устойчивости в пределах упругости вычисляют по формуле:')
+        doc.add_paragraph().add_run('[p]_E=(2.08∙10^-5∙E)/(n_y∙B_1)∙D/l∙[(100∙(s-c))/D]^2.5').font.math = True
+        p = doc.add_paragraph('коэффициент ')
+        p.add_run('B_1').font.math = True
+        p.add_run(' вычисляют по формуле')
+        doc.add_paragraph().add_run('B_1=min{1;9.45∙D/l∙√(D/(100∙(s-c)))}').font.math = True
+        doc.add_paragraph().add_run(f'9.45∙{data_in.dia}/{data_out.l}∙√({data_in.dia}/(100∙({data_in.s_prin}-{data_out.c:.2f})))={data_out.b1_2:.2f}').font.math = True
+        doc.add_paragraph().add_run(f'B_1=min(1;{data_out.b1_2:.2f})={data_out.b1:.1f}').font.math = True
+        doc.add_paragraph().add_run(f'[p]_E=(2.08∙10^-5∙{data_in.E})/({data_in.ny}∙{data_out.b1:.1f})∙{data_in.dia}/{data_out.l}∙[(100∙({data_in.s_prin}-{data_out.c:.2f}))/{data_in.dia}]^2.5={data_out.press_de:.2f} МПа').font.math = True
+        doc.add_paragraph().add_run(f'[p]={data_out.press_dp:.2f}/√(1+({data_out.press_dp:.2f}/{data_out.press_de:.2f})^2)={data_out.press_d:.2f} МПа').font.math = True
+
     doc.add_paragraph().add_run('[p]≥p').font.math = True
     doc.add_paragraph().add_run(f'{data_out.press_d:.2f}≥{data_in.press}').font.math = True
     if data_out.press_d > data_in.press:
-        doc.add_paragraph('Условие прочности выполняется')
+        doc.add_paragraph().add_run('Условие прочности выполняется').bold = True
     else:
         doc.add_paragraph().add_run('Условие прочности не выполняется').font.color.rgb = docx.shared.RGBColor(255,0,0)
-    p = doc.add_paragraph('Границы применения формул ')
+    if data_out.ypf:
+        p = doc.add_paragraph()
+        p.add_run('Границы применения формул ')
+    else:
+        p = doc.add_paragraph()
+        p.add_run('Границы применения формул ').font.color.rgb = docx.shared.RGBColor(255,0,0)
     if data_in.dia >= 200:
         p.add_run('при D ≥ 200 мм')
         doc.add_paragraph().add_run('(s-c)/(D)≤0.1').font.math = True
@@ -107,6 +164,7 @@ def makeWord_obnar(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum
     doc = docx.Document(docum)
     doc.add_heading(f'Расчет на прочность обечайки {data_in.name}, нагруженной наружным давлением').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    doc.add_picture('pic/ObCil.gif')
     doc.add_paragraph('Исходные данные').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     table = doc.add_table(rows=0, cols=0)
     table.add_column(7000000)
@@ -187,7 +245,7 @@ def makeWord_obnar(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum
     doc.add_paragraph().add_run(f'B=max(1;{data_out.b_2:.2f})={data_out.b:.2f}').font.math = True
     doc.add_paragraph('c - сумма прибавок к расчетной толщине')
     doc.add_paragraph().add_run('c=c_1+c_2+c_3').font.math = True
-    doc.add_paragraph().add_run(f'c={data_in.c_kor}+{data_in.c_minus}+{data_in.c3}={data_out.c:.2f} мм').font.math = True
+    doc.add_paragraph().add_run(f'c={data_in.c_kor}+{data_in.c_minus}+{data_in.c_3}={data_out.c:.2f} мм').font.math = True
     
     doc.add_paragraph().add_run(f'1.06∙(10^-2∙{data_in.dia})/({data_out.b:.2f})∙({data_in.press}/(10^-5∙{data_in.E})∙{data_out.l}/{data_in.dia})^0.4={data_out.s_calcr1:.2f}').font.math = True
     doc.add_paragraph().add_run(f'(1.2∙{data_in.press}∙{data_in.dia})/(2∙{data_in.sigma_d}-{data_in.press})={data_out.s_calcr2:.2f}').font.math = True
@@ -231,77 +289,92 @@ def makeWord_obnar(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum
 
     doc.save(docum)
 
-def makeWord_elvn(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum=None):
+def makeWord_el(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum=None):
 
     doc = docx.Document(docum)
     # добавить полусферическое
-    doc.add_heading(f'Расчет на прочность эллиптического днища {data_in.name}, нагруженного внутренним избыточным давлением').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+
+    h = doc.add_heading(f'Расчет на прочность эллиптического днища {data_in.name}, нагруженного ')
+    if data_in.dav == 'vn':
+        h.add_run('внутренним избыточным давлением')
+    else:
+        h.add_run('наружным давлением')
+    h.paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    doc.add_picture('pic/El.gif')
     doc.add_paragraph('Исходные данные').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+           
     table = doc.add_table(rows=0, cols=0)
-    table.add_column(7000000)
-    table.add_column(750000) #.alignment = docx.enum.table.WD_TABLE_ALIGNMENT.CENTER
-    table.add_column(750000)
+    table.add_column(6500000)
+    table.add_column(1000000) #.alignment = docx.enum.table.WD_TABLE_ALIGNMENT.CENTER
+    i = 0
+    table.add_row()
+    table.cell(i, 0).text = 'Материал днища'
+    table.cell(i, 1).text =f'{data_in.steel}'
+    i += 1
+    table.add_row()
+    table.cell(i, 0).text = 'Внутренний диаметр днища, D:'
+    table.cell(i, 1).text =f'{data_in.dia} мм'
+    i += 1
+    table.add_row()
+    table.cell(i, 0).text = 'Высота выпуклой части, H:'
+    table.cell(i, 1).text =f'{data_in.elH} мм'
+    i += 1
+    table.add_row()
+    table.cell(i, 0).text = 'Длина отбортовки '
+    table.cell(i, 0).paragraphs[0].add_run('h_1').font.math = True
+    table.cell(i, 0).paragraphs[0].add_run(':')
+    table.cell(i, 1).text =f'{data_in.elh1}'
+    i += 1
+    table.add_row()
+    table.cell(i, 0).text = 'Прибавка на коррозию, '
+    table.cell(i, 0).paragraphs[0].add_run('c_1').font.math = True
+    table.cell(i, 0).paragraphs[0].add_run(':')
+    table.cell(i, 1).text =f'{data_in.c_kor} мм'
+    i += 1
+    table.add_row()
+    table.cell(i, 0).text = 'Прибавка для компенсации минусового допуска листа, '
+    table.cell(i, 0).paragraphs[0].add_run('c_2').font.math = True
+    table.cell(i, 0).paragraphs[0].add_run(':')
+    table.cell(i, 1).text =f'{data_in.c_minus} мм'
+    i += 1
+    if data_in.c_3 > 0:
+        table.add_row()
+        table.cell(i, 0).text = 'Технологическая прибавка, '
+        table.cell(i, 0).paragraphs[0].add_run('c_3').font.math = True
+        table.cell(i, 0).paragraphs[0].add_run(':')
+        table.cell(i, 1).text =f'{data_in.c_3}'
+        i += 1
+    table.add_row()
+    table.cell(i, 0).text = 'Коэффициент прочности сварного шва, '
+    table.cell(i, 0).paragraphs[0].add_run('φ_p').font.math = True
+    table.cell(i, 1).text =f'{data_in.fi}'
+    del i
+
+    doc.add_paragraph('')
+    doc.add_paragraph('Условия нагружения').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
+    doc.add_paragraph('')
+    table = doc.add_table(rows=0, cols=0)
+    table.add_column(5000000)
+    table.add_column(3000000) #.alignment = docx.enum.table.WD_TABLE_ALIGNMENT.CENTER
     table.add_row()  
-    table.cell(0, 0).text = 'Наименование и размерность'
-    table.cell(0, 0).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(0, 1).text = 'Обозначение'
-    table.cell(0, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(0, 2).text = 'Значение'
+    table.cell(0, 0).text = 'Расчетная температура, Т:'
+    table.cell(0, 1).text = f'{data_in.temp} °С'
     table.add_row()
-    table.cell(1, 0).text = 'Расчетная температура, °С'
-    table.cell(1, 1).text = 't'
-    table.cell(1, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(1, 2).text = f'{data_in.temp}'
+    if data_in.dav == 'vn':
+        table.cell(1, 0).text = 'Расчетное внутреннее избыточное давление, p:'
+    else:
+        table.cell(1, 0).text = 'Расчетное наружное давление, p:'
+    table.cell(1, 1).text = f'{data_in.press} МПа'
+
     table.add_row()
-    table.cell(2, 0).text = 'Расчетное внутреннее давление, МПа'
-    table.cell(2, 1).text ='p'
-    table.cell(2, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(2, 2).text =f'{data_in.press}'
-    table.add_row()
-    table.cell(3, 0).text = 'Марка стали'
-    table.cell(3, 1).text =''
-    table.cell(3, 2).text =f'{data_in.steel}'
-    table.add_row()
-    table.cell(4, 0).text = 'Допускаемое напряжение при расчетной температуре, МПа'
-    table.cell(4, 1).text = '[σ]'
-    table.cell(4, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(4, 2).text =f'{data_in.sigma_d}'
-    table.add_row()
-    table.cell(5, 0).text = 'Коэффициент прочности сварного шва'
-    table.cell(5, 1).paragraphs[0].add_run('φ_p').font.math = True
-    #table.cell(5, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(5, 2).text =f'{data_in.fi}'
-    table.add_row()
-    table.cell(6, 0).text = 'Внутренний диаметр днища, мм'
-    table.cell(6, 1).text = 'D'
-    table.cell(6, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(6, 2).text =f'{data_in.dia}'
-    table.add_row()
-    table.cell(7, 0).text = 'Высота выпуклой части, мм'
-    table.cell(7, 1).text = 'Н'
-    table.cell(7, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(7, 2).text =f'{data_in.elH}'
-    table.add_row()
-    table.cell(8, 0).text = 'Длина отбортовки, мм'
-    table.cell(8, 1).paragraphs[0].add_run('h_1').font.math = True
-    #table.cell(8, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(8, 2).text =f'{data_in.dia}'
-    table.add_row()
-    table.cell(9, 0).text = 'Прибавка на коррозию, мм'
-    table.cell(9, 1).paragraphs[0].add_run('c_1').font.math = True
-    #table.cell(9, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(9, 2).text =f'{data_in.c_kor}'
-    table.add_row()
-    table.cell(10, 0).text = 'Прибавка для компенсации минусового допуска листа, мм'
-    table.cell(10, 1).paragraphs[0].add_run('c_2').font.math = True
-    #table.cell(10, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(10, 2).text =f'{data_in.c_minus}'
-    table.add_row()
-    table.cell(11, 0).text = 'Технологическая прибавка, мм'
-    table.cell(11, 1).paragraphs[0].add_run('c_3').font.math = True
-    #table.cell(11, 1).paragraphs[0].paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
-    table.cell(11, 2).text =f'{data_in.c_3}'
+    table.cell(2, 0).text = f'Допускаемое напряжение для материала {data_in.steel} при расчетной температуре, [σ]:'
+    table.cell(2, 1).text =f'{data_in.sigma_d} МПа'
+    if data_in.dav == 'nar':
+        table.add_row()
+        table.cell(3, 0).text = 'Модуль продольной упругости при расчетной температуре, E:'
+        table.cell(3, 1).text =f'{data_in.E} МПа'
+    
     doc.add_paragraph('')
     doc.add_paragraph('Результаты расчета').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('')
@@ -310,7 +383,10 @@ def makeWord_elvn(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum=
     p = doc.add_paragraph('где ')
     p.add_run('s_1p').font.math = True
     p.add_run(' - расчетная толщина стенки днища')
-    doc.add_paragraph().add_run('s_1p=(p∙R)/(2∙[σ]∙φ-0.5∙p)').font.math = True
+    if data_in.dav == 'vn':
+        doc.add_paragraph().add_run('s_1p=(p∙R)/(2∙[σ]∙φ-0.5∙p)').font.math = True
+    elif data_in.dav == 'nar':
+        doc.add_paragraph().add_run('s_1p=max{(K_Э∙R)/(161)∙√((n_y∙p)/(10^-5∙E));(1.2∙p∙R)/(2∙[σ])}').font.math = True
     doc.add_paragraph('где R - радиус кривизны в вершине днища')
     # добавить расчет R для разных ситуаций
     if data_in.dia == data_out.elR:
@@ -318,23 +394,37 @@ def makeWord_elvn(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum=
     else:
         doc.add_paragraph().add_run('R=D^2/(4∙H)').font.math = True
         doc.add_paragraph().add_run('R={data_in.dia}^2/(4∙{data_in.elH})={data_out.elR} мм').font.math = True
+
+    if data_in.dav == 'vn':
+        doc.add_paragraph().add_run(f's_p=({data_in.press}∙{data_out.elR})/(2∙{data_in.sigma_d}∙{data_in.fi}-0.5{data_in.press})={data_out.s_calcr:.2f} мм').font.math = True
+    elif data_in.dav == 'nar':
+        p = doc.add_paragraph('Для предварительного расчета ')
+        p.add_run('К_Э=0.9').font.math = True
+        p.add_run(' для эллиптических днищ')
+        doc.add_paragraph().add_run(f'(0.9∙{data_out.elR})/(161)∙√(({data_in.ny}∙{data_in.press})/(10^-5∙{data_in.E}))={data_out.s_calcr1:.2f}').font.math = True
+        doc.add_paragraph().add_run(f'(1.2∙{data_in.press}∙{data_out.elR})/(2∙{data_in.sigma_d})={data_out.s_calcr2:.2f}').font.math = True
+        doc.add_paragraph().add_run(f's_1p=max({data_out.s_calcr1:.2f};{data_out.s_calcr2:.2f})={data_out.s_calcr:.2f} мм').font.math = True
+
     doc.add_paragraph('c - сумма прибавок к расчетной толщине')
     doc.add_paragraph().add_run('c=c_1+c_2+c_3').font.math = True
     doc.add_paragraph().add_run(f'c={data_in.c_kor}+{data_in.c_minus}+{data_in.c_3}={data_out.c:.2f} мм').font.math = True
-    doc.add_paragraph().add_run(f's_p=({data_in.press}∙{data_out.elR})/(2∙{data_in.sigma_d}∙{data_in.fi}-0.5{data_in.press})={data_out.s_calcr:.2f} мм').font.math = True
+    
     doc.add_paragraph().add_run(f's={data_out.s_calcr:.2f}+{data_out.c:.2f}={data_out.s_calc:.2f} мм').font.math = True
+    
     if data_in.s_prin >= data_out.s_calc:
-        p = doc.add_paragraph(f'Принятая толщина ')
+        p = doc.add_paragraph()
+        p.add_run(f'Принятая толщина ').bold = True
         p.add_run(f's_1={data_in.s_prin} мм').font.math = True
     else:
         doc.add_paragraph().add_run(f'Принятая толщина s={data_in.s_prin} мм').font.color.rgb = docx.shared.RGBColor(255,0,0)
+    
     doc.add_paragraph('Допускаемое внутреннее избыточное давление вычисляют по формуле:')
     doc.add_paragraph().add_run('[p]=(2∙[σ]∙φ∙(s_1-c))/(R+0.5∙(s-c))').font.math = True
     doc.add_paragraph().add_run(f'[p]=(2∙{data_in.sigma_d}∙{data_in.fi}∙({data_in.s_prin}-{data_out.c:.2f}))/({data_out.elR}+0.5∙({data_in.s_prin}-{data_out.c:.2f}))={data_out.press_d:.2f} МПа').font.math = True
     doc.add_paragraph().add_run('[p]≥p').font.math = True
     doc.add_paragraph().add_run(f'{data_out.press_d:.2f}≥{data_in.press}').font.math = True
     if data_out.press_d > data_in.press:
-        doc.add_paragraph('Условие прочности выполняется')
+        doc.add_paragraph().add_run('Условие прочности выполняется').bold = True
     else:
         doc.add_paragraph().add_run('Условие прочности не выполняется').font.color.rgb = docx.shared.RGBColor(255,0,0)
     if data_out.ypf:
@@ -437,7 +527,7 @@ def makeWord_elnar(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum
     p.add_run('К_Э=0.9').font.math = True
     p.add_run(' для эллиптических днищ')
     if data_in.dia == data_out.elR:
-        doc.add_paragraph(f'R=D={data_in.dia} мм - для эллиптичекских днищ с H=0.25D')
+        doc.add_paragraph(f'R=D={data_in.dia} мм - для эллиптических днищ с H=0.25D')
     else:
         doc.add_paragraph().add_run('R=D^2/(4∙H)').font.math = True
         doc.add_paragraph().add_run('R={data_in.dia}^2/(4∙{data_in.elH})={data_out.elR} мм').font.math = True
@@ -750,7 +840,7 @@ def makeWord_obyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
     doc.add_paragraph().add_run('L_0=√(D_p∙(s-c))').font.math = True
     doc.add_paragraph().add_run(f'L_0=√({data_nozzleout.Dp}∙({data_in.s_prin}-{data_out.c:.2f}))={data_nozzleout.L0:.2f}').font.math = True
 
-    doc.add_paragraph('Расчетная ширина зоны укрепления отверстия в стенке циллиндрической обечайки')
+    doc.add_paragraph('Расчетная ширина зоны укрепления отверстия в стенке цилиндрической обечайки')
     if data_nozzlein.vid in [1, 2, 3, 4, 5, 6]:
         doc.add_paragraph().add_run(f'l_p=L_0={data_nozzleout.lp:.2f} мм').font.math = True
     elif data_nozzlein.vid in [7, 8]:
@@ -805,7 +895,13 @@ def makeWord_obyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
         p.add_run(f's_pn=s_p={data_out.s_calcr:.2f} мм').font.math = True 
         p.add_run(' - в случае внутреннего давления')
     else:
-        pass
+        doc.add_paragraph().add_run('s_pn=(p_pn∙D_p)/(2∙K_1∙[σ]-p_pn)').font.math = True
+        doc.add_paragraph().add_run('p_pn=p/√(1-(p/[p]_E)^2)').font.math = True
+        p = doc.add_paragraph('')
+        p.add_run('[p]_E').font.math = True
+        p.add_run(' -  допускаемое наружное давление из условия устойчивости в пределах упругости, определяемое по ГОСТ 34233.2 для обечайки без отверстий')
+        doc.add_paragraph().add_run(f'p_pn={data_in.press}/√(1-({data_in.press}/{data_nozzleout.pen:.2f})^2)={data_nozzleout.ppn:.2f} МПа').font.math = True
+        doc.add_paragraph().add_run('s_pn=({data_nozzleout.ppn:.2f}∙{data_nozzleout.Dp:.2f})/(2∙{data_nozzleout.K1}∙{data_in.sigma_d}-{data_nozzleout.ppn:.2f})={data_nozzleout.spn:.2f} мм').font.math = True
 
     doc.add_paragraph().add_run(f'2∙((s-c)/s_pn-0.8)∙√(D_p∙(s-c))=2∙(({data_in.s_prin}-{data_out.c:.2f})/{data_nozzleout.spn:.2f}-0.8)∙√({data_nozzleout.Dp}∙({data_in.s_prin}-{data_out.c:.2f}))={data_nozzleout.d01:.2f}').font.math = True
     doc.add_paragraph().add_run(f'd_max+2∙c_s={data_nozzleout.dmax:.2f}+2∙{data_nozzlein.cs}={data_nozzleout.d02:.2f}').font.math = True
@@ -995,7 +1091,7 @@ def makeWord_elyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
         table.add_row()
         table.cell(11, 0).text = 'Длина внутренней части штуцера, '
         table.cell(11, 0).paragraphs[0].add_run('l_3').font.math = True
-        table.cell(11, 1).text =f'{data_nozzlein.l1} мм'
+        table.cell(11, 1).text =f'{data_nozzlein.l3} мм'
         table.add_row()
         table.cell(12, 0).text = 'Толщина внутренней части штуцера, '
         table.cell(12, 0).paragraphs[0].add_run('s_3').font.math = True
@@ -1148,7 +1244,7 @@ def makeWord_elyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
     doc.add_paragraph().add_run('L_0=√(D_p∙(s-c))').font.math = True
     doc.add_paragraph().add_run(f'L_0=√({data_nozzleout.Dp}∙({data_in.s_prin}-{data_out.c:.2f}))={data_nozzleout.L0:.2f}').font.math = True
 
-    doc.add_paragraph('Расчетная ширина зоны укрепления отверстия в стенке циллиндрической обечайки')
+    doc.add_paragraph('Расчетная ширина зоны укрепления отверстия в стенке цилиндрической обечайки')
     if data_nozzlein.vid in [1, 2, 3, 4, 5, 6]:
         doc.add_paragraph().add_run(f'l_p=L_0={data_nozzleout.lp:.2f} мм').font.math = True
     elif data_nozzlein.vid in [7, 8]:
@@ -1775,3 +1871,6 @@ def makeWord_obsaddle(data_in:CalcClass.data_saddlein, data_out:CalcClass.data_s
     
 
     doc.save(docum)
+
+def makeWord_heat():
+    pass

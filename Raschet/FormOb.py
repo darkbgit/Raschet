@@ -344,11 +344,13 @@ class FormOb(QtWidgets.QWidget):
         
         
         if data_inerr == '':
+            v = ''
             cc = CalcClass.CalcClass()
             data_out = cc.calc_ob(data_in)
             #try:
             if float(self.s_leob.text()) >= data_out.s_calc:
                 data_in.s_prin = float(self.s_leob.text())
+                
                 data_out = cc.calc_ob(data_in)
                 globalvar.elementdatayk = [data_in, data_out]
                 data_word.append([data_in, data_out])
@@ -360,11 +362,16 @@ class FormOb(QtWidgets.QWidget):
                 self.s_calc_lob.setText(f'sp={data_out.s_calc:.3f} мм')
                 self.press_d_lob.setText(f'[p]={data_out.press_d:.3f} МПа')
                 self.pbObToNozzle.setEnabled(True)
-                if (data_in.dia < 200 and (data_in.s_prin - data_out.c)/data_in.dia <= 0.1) or (data_in.dia >= 200 and (data_in.s_prin - data_out.c)/data_in.dia <= 0.3):
-                    data_out.ypf = True
+                if data_out.ypf == False:
+                    v = 'Условия применения формул не выполняется'
+                if data_out.press_d < data_in.press:
+                    v += '\n[p] меньше p'
+                if v == '':
+                    dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Information, 'Ok', 'Complite')
+                    result = dialog.exec()
                 else:
-                    data_out.ypf = False
-                    self.ypf_l.setText('Условия применения формул не выполняется')
+                    dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', v)
+                    result = dialog.exec()
             else:
                 dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', 's должно быть больше или равно sp')
                 result = dialog.exec()
