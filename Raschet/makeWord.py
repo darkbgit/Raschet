@@ -8,6 +8,7 @@ import os
 
 def makeWord_ob(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum=None):
     doc = docx.Document(docum)
+    document.add_page_break()
     h = doc.add_heading(f'Расчет на прочность обечайки {data_in.name}, нагруженной ')
     if data_in.dav == 'vn':
         h.add_run('внутренним избыточным давлением')
@@ -293,7 +294,7 @@ def makeWord_el(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum=No
 
     doc = docx.Document(docum)
     # добавить полусферическое
-
+    document.add_page_break()
     h = doc.add_heading(f'Расчет на прочность эллиптического днища {data_in.name}, нагруженного ')
     if data_in.dav == 'vn':
         h.add_run('внутренним избыточным давлением')
@@ -585,6 +586,7 @@ def makeWord_elnar(data_in:CalcClass.data_in, data_out:CalcClass.data_out, docum
 
 def makeWord_obyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_nozzlein:CalcClass.data_nozzlein, data_nozzleout:CalcClass.data_nozzleout, docum=None):
     doc = docx.Document(docum)
+    document.add_page_break()
     h = doc.add_heading(f'Расчет на прочность узла врезки штуцера {data_nozzlein.name} в обечайку {data_in.name}, нагруженную ')
     if data_in.dav == 'vn':
         h.add_run('внутренним избыточным давлением')
@@ -908,10 +910,14 @@ def makeWord_obyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
     doc.add_paragraph().add_run(f'd_0=min({data_nozzleout.d01:.2f};{data_nozzleout.d02:.2f})={data_nozzleout.d0:.2f} мм').font.math = True
     if data_nozzleout.dp <= data_nozzleout.d0:
         doc.add_paragraph().add_run(f'{data_nozzleout.dp:.2f}≤{data_nozzleout.d0:.2f}').font.math = True
-        doc.add_paragraph('Условие прочности выполняется, следовательно дальнейших расчетов укрепления отверстия не требуется')
+        p = doc.add_paragraph()
+        p.add_run('Условие прочности выполняется').bold = True
+        p.add_run(', следовательно дальнейших расчетов укрепления отверстия не требуется')
     else:
         doc.add_paragraph().add_run(f'{data_nozzleout.dp:.2f}≤{data_nozzleout.d0:.2f}').font.math = True
-        doc.add_paragraph('Условие прочности не выполняется, следовательно необходим дальнейший расчет укрепления отверстия')
+        p = doc.add_paragraph()
+        p.add_run('Условие прочности не выполняется').bold = True
+        p.add_run(', следовательно необходим дальнейший расчет укрепления отверстия')
         doc.add_paragraph('В случае укрепления отверстия утолщением стенки сосуда или штуцера, или накладным кольцом, или вварным кольцом, или торообразной вставкой, или отбортовкой должно выполняться условие')
         doc.add_paragraph().add_run('l_1p∙(s_1-s_1p-c_s)∙χ_1+l_2p∙s_2∙χ_2+l_3p∙(s_3-c_s-c_s1)∙χ_3+l1p∙(s-s_p-c)∙χ_4≥0.5∙(d_p-d_0p)∙s_p').font.math = True
         doc.add_paragraph().add_run('l_1p∙(s_1-s_1p-c_s)∙χ_1+l_2p∙s_2∙χ_2+l_3p∙(s_3-c_s-c_s1)∙χ_3+l1p∙(s-s_p-c)∙χ_4=').font.math = True
@@ -919,7 +925,7 @@ def makeWord_obyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
         doc.add_paragraph().add_run(f'0.5∙(d_p-d_0p)∙s_p=0.5∙({data_nozzleout.dp:.2f}-{data_nozzleout.d0p:.2f})∙{data_out.s_calcr:.2f}={data_nozzleout.yslyk2:.2f}').font.math = True
         doc.add_paragraph().add_run(f'{data_nozzleout.yslyk1:.2f}≥{data_nozzleout.yslyk2:.2f}').font.math = True
         if data_nozzleout.yslyk1 >= data_nozzleout.yslyk2:
-            doc.add_paragraph('Условие прочности выполняется')
+            doc.add_paragraph().add_run('Условие прочности выполняется').bold = True
         else:
             doc.add_paragraph().add_run('Условие прочности не выполняется').font.color.rgb = docx.shared.RGBColor(255,0,0)
 
@@ -955,7 +961,7 @@ def makeWord_obyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
     doc.add_paragraph().add_run('[p]≥p').font.math = True
     doc.add_paragraph().add_run(f'{data_nozzleout.press_d:.2f} МПа >= {data_in.press} МПа').font.math = True
     if data_nozzleout.press_d >= data_in.press:
-        doc.add_paragraph('Условие прочности выполняется')
+        doc.add_paragraph().add_run('Условие прочности выполняется').bold = True
     else:
         doc.add_paragraph().add_run('Условие прочности не выполняется').font.color.rgb = docx.shared.RGBColor(255,0,0)
     
@@ -969,6 +975,7 @@ def makeWord_obyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
 
 def makeWord_elyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_nozzlein:CalcClass.data_nozzlein, data_nozzleout:CalcClass.data_nozzleout, docum=None):
     doc = docx.Document(docum)
+    document.add_page_break()
     h = doc.add_heading(f'Расчет на прочность узла врезки штуцера {data_nozzlein.name} в эллиптическое днище {data_in.name}, нагруженное ')
     if data_in.dav == 'vn':
         h.add_run('внутренним избыточным давлением')
@@ -1205,7 +1212,7 @@ def makeWord_elyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
     if data_in.elH == data_in.dia * 0.25:
         doc.add_paragraph('Расчетный диаметр укрепляемого элемента (для эллиптического днища при H=0.25D)')
         doc.add_paragraph().add_run('D_p=2∙D∙√(1-3∙(x/D)^2)').font.math = True
-        doc.add_paragraph().add_run(f'D_p=2∙{data_in.dia}∙√(1-3∙({data_nozzlein.elx}/{data_in.dia})^2)={data_nozzleout.Dp} мм').font.math = True
+        doc.add_paragraph().add_run(f'D_p=2∙{data_in.dia}∙√(1-3∙({data_nozzlein.elx}/{data_in.dia})^2)={data_nozzleout.Dp:.2f} мм').font.math = True
     else:
         doc.add_paragraph('Расчетный диаметр укрепляемого элемента (для эллиптического днища)')
         doc.add_paragraph().add_run('D_p=D^2/(2∙H)∙√(1-(D^2-4∙H^2)/D^4∙x^2)').font.math = True
@@ -1257,7 +1264,8 @@ def makeWord_elyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
         doc.add_paragraph().add_run(f'√(D_p∙(s_2+s-c))=√({data_nozzleout.Dp}∙({data_nozzlein.s2}+{data_in.s_prin}-{data_out.c:.2f}))={data_nozzleout.l2p2:.2f} мм').font.math = True
         doc.add_paragraph().add_run(f'l_2p=min({data_nozzlein.l2};{data_nozzleout.l2p2:.2f})={data_nozzleout.l2p:.2f} мм').font.math = True
 
-    doc.add_paragraph('Учет применения различного материального исполнения')
+    if data_nozzleout.psi1 != 1 or data_nozzleout.psi2 != 1 or data_nozzleout.psi3 != 1 or data_nozzleout.psi4 != 1:
+        doc.add_paragraph('Учет применения различного материального исполнения')
     if data_in.steel != data_nozzlein.steel1:
         p = doc.add_paragraph('- для внешней части штуцера')
         p.add_run(f'χ_1=min(1;[σ]_1/[σ])=min(1;{data_nozzlein.sigma_d1}/{data_in.sigma_d})={data_nozzleout.psi1}')
@@ -1316,10 +1324,14 @@ def makeWord_elyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
     doc.add_paragraph().add_run(f'd_0=min({data_nozzleout.d01:.2f};{data_nozzleout.d02:.2f})={data_nozzleout.d0:.2f} мм').font.math = True
     if data_nozzleout.dp <= data_nozzleout.d0:
         doc.add_paragraph().add_run(f'{data_nozzleout.dp:.2f}≤{data_nozzleout.d0:.2f}').font.math = True
-        doc.add_paragraph('Условие прочности выполняется, следовательно дальнейших расчетов укрепления отверстия не требуется')
+        p = doc.add_paragraph()
+        p.add_run('Условие прочности выполняется').bold = True
+        p.add_run(', следовательно дальнейших расчетов укрепления отверстия не требуется')
     else:
         doc.add_paragraph().add_run(f'{data_nozzleout.dp:.2f}≤{data_nozzleout.d0:.2f}').font.math = True
-        doc.add_paragraph('Условие прочности не выполняется, следовательно необходим дальнейший расчет укрепления отверстия')
+        p = doc.add_paragraph()
+        p.add_run('Условие прочности не выполняется').bold = True
+        p.add_run(', следовательно необходим дальнейший расчет укрепления отверстия')
         doc.add_paragraph('В случае укрепления отверстия утолщением стенки сосуда или штуцера, или накладным кольцом, или вварным кольцом, или торообразной вставкой, или отбортовкой должно выполняться условие')
         doc.add_paragraph().add_run('l_1p∙(s_1-s_1p-c_s)∙χ_1+l_2p∙s_2∙χ_2+l_3p∙(s_3-c_s-c_s1)∙χ_3+l1p∙(s-s_p-c)∙χ_4≥0.5∙(d_p-d_0p)∙s_p').font.math = True
         doc.add_paragraph().add_run('l_1p∙(s_1-s_1p-c_s)∙χ_1+l_2p∙s_2∙χ_2+l_3p∙(s_3-c_s-c_s1)∙χ_3+l1p∙(s-s_p-c)∙χ_4=').font.math = True
@@ -1327,7 +1339,7 @@ def makeWord_elyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
         doc.add_paragraph().add_run(f'0.5∙(d_p-d_0p)∙s_p=0.5∙({data_nozzleout.dp:.2f}-{data_nozzleout.d0p:.2f})∙{data_out.s_calcr:.2f}={data_nozzleout.yslyk2:.2f}').font.math = True
         doc.add_paragraph().add_run(f'{data_nozzleout.yslyk1:.2f}≥{data_nozzleout.yslyk2:.2f}').font.math = True
         if data_nozzleout.yslyk1 >= data_nozzleout.yslyk2:
-            doc.add_paragraph('Условие прочности выполняется')
+            doc.add_paragraph().add_run('Условие прочности выполняется').bold = True
         else:
             doc.add_paragraph().add_run('Условие прочности не выполняется').font.color.rgb = docx.shared.RGBColor(255,0,0)
 
@@ -1363,7 +1375,7 @@ def makeWord_elyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
     doc.add_paragraph().add_run('[p]≥p').font.math = True
     doc.add_paragraph().add_run(f'{data_nozzleout.press_d:.2f} МПа >= {data_in.press} МПа').font.math = True
     if data_nozzleout.press_d >= data_in.press:
-        doc.add_paragraph('Условие прочности выполняется')
+        doc.add_paragraph().add_run('Условие прочности выполняется').bold = True
     else:
         doc.add_paragraph().add_run('Условие прочности не выполняется').font.color.rgb = docx.shared.RGBColor(255,0,0)
     
@@ -1377,8 +1389,7 @@ def makeWord_elyk(data_in:CalcClass.data_in, data_out:CalcClass.data_out, data_n
 
 def makeWord_obsaddle(data_in:CalcClass.data_saddlein, data_out:CalcClass.data_saddleout, docum=None):
     doc = docx.Document(docum)
-
-    doc = docx.Document(docum)
+    document.add_page_break()    
     doc.add_heading(f'Расчет на прочность обечайки {data_in.nameob} от воздействия опорных нагрузок').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
     doc.add_paragraph('Исходные данные').paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER

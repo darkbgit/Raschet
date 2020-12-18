@@ -46,6 +46,21 @@ class MyWindow(QtWidgets.QMainWindow):
             
         self.proekt_le.textEdited.connect(self.proektLe)
 
+        self.menu = QtWidgets.QMenu()
+        self.menu_up = QtWidgets.QAction('Вверх', self.menu)
+        self.menu_up.triggered.connect(self.menuUpLv)
+        self.menu_down = QtWidgets.QAction('Вниз', self.menu)
+        self.menu_down.triggered.connect(self.menuDownLv)
+        self.menu_del = QtWidgets.QAction('Удалить', self.menu)
+        self.menu_del.triggered.connect(self.menuDelLv)
+        self.menu_delall = QtWidgets.QAction('Удалить все', self.menu)
+        self.menu_delall.triggered.connect(self.menuDelAllLv)
+        self.menu.addAction(self.menu_up)
+        self.menu.addAction(self.menu_down)
+        self.menu.addSeparator()
+        self.menu.addAction(self.menu_del)
+        self.menu.addAction(self.menu_delall)
+
     def proektLe(self):
         t = self.proekt_le.text()
         p = re.compile(r'(?<=Н-)(\d{4})')
@@ -83,36 +98,57 @@ class MyWindow(QtWidgets.QMainWindow):
 
 
     def context_lv(self, point):
-        #if lvCalc.
-        menu = QtWidgets.QMenu()
-        menu_up = QtWidgets.QAction('Вверх', menu)
-        menu_up.triggered.connect(self.menuUpLv)
-        menu_down = QtWidgets.QAction('Вниз', menu)
-        menu_del = QtWidgets.QAction('Удалить', menu)
-        menu_delall = QtWidgets.QAction('Удалить все', menu)
-        menu_delall.triggered.connect(self.menuDelAllLv)
-        menu.addAction(menu_up)
-        menu.addAction(menu_down)
-        menu.addSeparator()
-        menu.addAction(menu_del)
-        menu.addAction(menu_delall)
-        menu.exec(self.lvCalc.mapToGlobal(point))
+        if self.lvCalc.model():
+            self.menu_up.setEnabled(True)
+            self.menu_down.setEnabled(True)
+            if self.lvCalc.selectedIndexes()[0].row() == 0:
+                self.menu_up.setDisabled(True)
+            if self.lvCalc.selectedIndexes()[0].row() == self.lvCalc.model().rowCount() - 1:
+                self.menu_down.setDisabled(True)
+            self.menu.exec(self.lvCalc.mapToGlobal(point))
    
     def menuUpLv(self):
-        print('Ok')
+        i = self.lvCalc.selectedIndexes()[0].row()
+        data_word[i], data_word[i-1] = data_word[i-1], data_word[i]
+        d = self.lvCalc.model().data(self.lvCalc.model().index(i), 0)
+        d1 = self.lvCalc.model().data(self.lvCalc.model().index(i-1), 0)
+        self.lvCalc.model().setData(self.lvCalc.model().index(i-1), d1)
+        self.lvCalc.model().setData(self.lvCalc.model().index(i), d)
+        del d, d1
+
+    def menuDownLv(self):
+        i = self.lvCalc.selectedIndexes()[0].row()
+        data_word[i], data_word[i+1] = data_word[i+1], data_word[i]
+        d = self.lvCalc.model().data(self.lvCalc.model().index(i), 0)
+        d1 = self.lvCalc.model().data(self.lvCalc.model().index(i+1), 0)
+        self.lvCalc.model().setData(self.lvCalc.model().index(i), d1)
+        self.lvCalc.model().setData(self.lvCalc.model().index(i+1), d)
+        del d, d1
+
+    def menuDelLv(self):
+        if self.lvCalc.model().rowCount() == 0:
+            self.lvCalc.setModel(None)
+            data_word.clear()
+
+        data_word.pop(self.lvCalc.selectedIndexes()[0].row())
+        self.lvCalc.model().removeRow(self.lvCalc.selectedIndexes()[0].row())
+
+
 
     def menuDelAllLv(self):
-        word_lv.rowCount()
-        word_lv.removeRows(0, word_lv.rowCount())
+        data_word.clear()
+        self.lvCalc.setModel(None)
+        
+        #self.lvCalc.rowsAboutToBeRemoved(0, self.lvCalc.rowCount())
         #word_lv.rowsAboutToBeRemoved(0)
-        self.lvCalc.setModel(word_lv)
+        #self.lvCalc.setModel(word_lv)
 
     def makeWord(self):
         f = self.file_le.text() + '.docx'
         if os.path.isfile(f):
             try:
                 with open(f,"r+") as fi:
-                    pass
+                    fi.close()
             except IOError:
                 dialog = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Critical, 'Error', f'закройте файл {f} и нажмите OK')
                 result = dialog.exec()
@@ -120,7 +156,8 @@ class MyWindow(QtWidgets.QMainWindow):
             shutil.copy(r'temp.docx', f)
             if self.proekt_le.text() != '':
                 doc = docx.Document(f)
-                doc.core_properties.subject = self.proekt_le.text() + ' РР'
+                if doc.core_properties.subject != self.proekt_le.text() + 'РР':
+                    doc.core_properties.subject = self.proekt_le.text() + ' РР'
                 doc.save(f)
             
         self.pbMakeWord.setEnabled(False)
