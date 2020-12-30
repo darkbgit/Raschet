@@ -279,6 +279,7 @@ class CalcClass(object):
         name - steel
         temp - temperature Celsius deegre
         """
+        #отделение названия стали от дополнительных параметров
         import re
         f = re.findall(r'(.*)(?:\()', name, re.S)
         if f != []:

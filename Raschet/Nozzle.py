@@ -297,7 +297,7 @@ class Nozzle(QtWidgets.QWidget):
                     if self.placepolar_rb.isChecked():
                         self.ellTilted()
                     else:
-                        self.ellTitledDekart()
+                        self.ellTiltedDekart()
 
                 elif s == 'Полярная':
                     if self.placerb_1.isChecked():
